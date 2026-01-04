@@ -13,7 +13,7 @@ maybe I use bycript instead of hashing
 from werkzeug.security import generate_password_hash, check_password_hash
 """
 #future change: "postgresql://user:password@localhost:5432/mydb"
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = sa.create_engine(DATABASE_URL, connect_args={"check_same_thread": False}) 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -132,7 +132,7 @@ class Memberships(Base):
         sa.DateTime, default=datetime.now(timezone.utc), index=True
     )
 
-    invited_by: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer, sa.ForeignKey("users.id"), nullable=True)
+    invited_by: so.Mapped[Optional[uuid.UUID]] = so.mapped_column(UUID(as_uuid=True), sa.ForeignKey("users.id"), nullable=True)
 
     __table_args__ = (
         sa.UniqueConstraint("user_id", "project_id", name="uq_membership_user_project"),
