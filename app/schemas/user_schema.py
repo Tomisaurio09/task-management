@@ -4,7 +4,7 @@
 
 from pydantic import BaseModel, EmailStr, field_validator
 from typing import Union
-
+import re
 class UserRegisterSchema(BaseModel):
     email: EmailStr
     password: Union[str, int]
@@ -12,17 +12,19 @@ class UserRegisterSchema(BaseModel):
 
     @field_validator('full_name')
     @classmethod
-    def validate_name(cls, full_name):
-        if full_name.isalpha():
+    def validate_name(cls, full_name: str):
+        pattern = r"^[A-Za-zÀ-ÿ\s'-]+$" 
+        if re.match(pattern, full_name):
             return full_name
-        raise ValueError(f"Your full must only have letters, you can't write '{full_name}'")
+        raise ValueError("Invalid full name.")
+
 
     @field_validator('full_name')
     @classmethod
     def validate_name_length(cls, full_name):
-        if full_name.isalpha() and len(full_name) <= 15:
+        if len(full_name) <= 64:
             return full_name
-        raise ValueError("Your full name must be 15 characters maximum.")
+        raise ValueError("Your full name must be 64 characters maximum.")
     
     @field_validator('password')
     @classmethod
@@ -31,6 +33,3 @@ class UserRegisterSchema(BaseModel):
             return password
         raise ValueError("Your password must be at least 8 characters long.")
     
-class UserLoginSchema(BaseModel):
-    email: EmailStr
-    password: Union[str, int]
