@@ -41,7 +41,7 @@ class MembershipResponseSchema(BaseModel):
     invited_by: UUID | None
 
     class Config:
-        from_attributes = True  # antes era orm_mode=True
+        from_attributes = True  
 
 class ProjectResponseSchema(BaseModel):
     id: UUID

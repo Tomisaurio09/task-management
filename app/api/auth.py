@@ -10,7 +10,7 @@ router = APIRouter(tags=["auth"])
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 def register(user_details: UserRegisterSchema, db: Session = Depends(get_db)):
-    #check if user already exists
+    
     existing_user = db.query(User).filter(User.email == user_details.email).first()
     if existing_user:
         raise HTTPException(
@@ -31,10 +31,10 @@ def register(user_details: UserRegisterSchema, db: Session = Depends(get_db)):
     db.refresh(new_user)
     return new_user
 
-#login is done, now we handle register
+
 @router.post("/login")
 def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    #OAuth2PasswordRequestForm points to username, but we read the field as email bc username can be whatever
+    
     user = db.query(User).filter(User.email == user_credentials.username).first()
 
     if not user:
@@ -48,7 +48,7 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session =
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Invalid credentials"
         )
-    #put all the information of the user u want
+    
 
     access_token = create_access_token(data={"sub": str(user.id)})
     return {

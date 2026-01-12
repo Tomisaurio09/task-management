@@ -8,7 +8,8 @@ from ..models.membership import Membership, UserRole
 from sqlalchemy.orm import Session
 from ..auth.oauth2 import get_current_user
 from ..auth.roles import check_project_role
-
+from ..services import memberships
+from ..schemas.membership_schema import AddMemberSchema, ChangeRoleMemberSchema
 router = APIRouter(tags=["projects"])
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=ProjectResponseSchema)
@@ -58,7 +59,7 @@ def get_project(
     check_project_role(
         project_id=project_id,
         user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER],  # ← Usar Enums
+        allowed_roles=[UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER],  
         db=db
     )
     
@@ -79,7 +80,7 @@ def update_project(
     check_project_role(
         project_id=project_id,
         user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR],  # ← Usar Enums
+        allowed_roles=[UserRole.OWNER, UserRole.EDITOR],  
         db=db
     )
     
@@ -102,7 +103,7 @@ def delete_project(
     check_project_role(
         project_id=project_id,
         user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER],  # ← Usar Enum
+        allowed_roles=[UserRole.OWNER],  
         db=db
     )
     
@@ -113,3 +114,35 @@ def delete_project(
     db.delete(project)
     db.commit()
     return None
+
+#business logic
+@router.post("/{project_id}/members/add/{user_id}", status_code=status.HTTP_201_CREATED)
+def add_member_endpoint(project_id: UUID, user_id: UUID, body: AddMemberSchema, current_user=Depends(get_current_user), db: Session = Depends(get_db)):
+    check_project_role(
+        project_id=project_id,
+        user_id=current_user["id"],
+        allowed_roles=[UserRole.OWNER],  
+        db=db
+    )
+    return memberships.add_member(project_id, user_id, body.role, current_user["id"], db)
+
+
+@router.delete("/{project_id}/members/remove/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def remove_member_endpoint(project_id: UUID, user_id: UUID, current_user=Depends(get_current_user), db: Session = Depends(get_db)):
+    check_project_role(
+        project_id=project_id,
+        user_id=current_user["id"],
+        allowed_roles=[UserRole.OWNER],  
+        db=db
+    )
+    return memberships.remove_member(project_id, user_id, db)
+
+@router.put("/{project_id}/members/change-role/{user_id}", status_code=status.HTTP_200_OK)
+def change_member_role_endpoint(project_id: UUID, user_id: UUID, body: ChangeRoleMemberSchema, current_user=Depends(get_current_user), db: Session = Depends(get_db)):
+    check_project_role(
+        project_id=project_id,
+        user_id=current_user["id"],
+        allowed_roles=[UserRole.OWNER],  
+        db=db
+    )
+    return memberships.change_member_role(project_id, user_id, body.role, db)
