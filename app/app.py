@@ -27,8 +27,9 @@ Base.metadata.create_all(bind=engine)
 # app.include_router(projects.router, prefix="/projects")
 # app.include_router(boards.router, prefix="/boards")
 # app.include_router(tasks.router, prefix="/tasks")
-from app.api import auth
+from app.api import auth, projects
 app.include_router(auth.router, prefix="/auth")
+app.include_router(projects.router, prefix="/projects")
 
 @app.get("/")
 def root():

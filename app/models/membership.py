@@ -10,9 +10,9 @@ from ..db.db_session import Base
 
 
 class UserRole(Enum):
-    ADMIN = "admin"
-    EDITOR = "editor"
-    VIEWER = "viewer"
+    OWNER = "OWNER"
+    EDITOR = "EDITOR"
+    VIEWER = "VIEWER"
 
 
 class Membership(Base):
