@@ -1,8 +1,7 @@
 from pydantic import BaseModel, Field, field_validator
 from uuid import UUID
 from datetime import datetime
-from typing import List, Optional
-
+from typing import Optional
 
 class ProjectCreateSchema(BaseModel):
     name: str = Field(..., max_length=128, description="Project name, max 128 characters")
@@ -17,7 +16,6 @@ class ProjectCreateSchema(BaseModel):
 
 
 class ProjectUpdateSchema(BaseModel):
-    # Campos opcionales para edición
     name: Optional[str] = Field(None, max_length=128)
 
     @field_validator("name")
@@ -26,11 +24,6 @@ class ProjectUpdateSchema(BaseModel):
         if value is not None and not value.strip():
             raise ValueError("The project name cannot be empty.")
         return value
-
-
-from pydantic import BaseModel
-from uuid import UUID
-from datetime import datetime
 
 class MembershipResponseSchema(BaseModel):
     id: int

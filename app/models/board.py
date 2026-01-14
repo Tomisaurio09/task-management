@@ -5,7 +5,8 @@ import uuid
 from datetime import datetime, timezone
 from ..db.db_session import Base
 
-
+#JUSTO RECIEN HICE UN CAMBIO EN EL MODELO, ASI QUE HAY QUE USAR ALEMBIC PARA MIGRAR LA DB
+#ADEMAS TENGO QUE BORRAR LAS TABLAS Y DESPUES CORRER ALEMBIC
 class Board(Base):
     __tablename__ = "boards"
 
@@ -18,6 +19,9 @@ class Board(Base):
     project_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("projects.id") )
     created_at: so.Mapped[datetime] = so.mapped_column(
         sa.DateTime, default=datetime.now(timezone.utc), index=True
+    )
+    updated_at : so.Mapped[datetime] = so.mapped_column(
+        sa.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc)
     )
     position: so.Mapped[int] = so.mapped_column(sa.Integer, default=0)
     archived: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
