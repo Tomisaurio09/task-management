@@ -5,8 +5,6 @@ import uuid
 from datetime import datetime, timezone
 from ..db.db_session import Base
 
-#JUSTO RECIEN HICE UN CAMBIO EN EL MODELO, ASI QUE HAY QUE USAR ALEMBIC PARA MIGRAR LA DB
-#ADEMAS TENGO QUE BORRAR LAS TABLAS Y DESPUES CORRER ALEMBIC
 class Board(Base):
     __tablename__ = "boards"
 

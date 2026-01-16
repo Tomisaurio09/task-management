@@ -20,14 +20,11 @@ app.add_middleware(
 
 # Crear tablas automáticamente (solo en dev, en prod usar Alembic)
 #Base.metadata.create_all(bind=engine)
-
-#from app.api import users, projects, boards, tasks, auth
-# app.include_router(boards.router, prefix="/boards")
-# app.include_router(tasks.router, prefix="/tasks")
-from app.api import auth, projects, boards
+from app.api import auth, projects, boards, tasks
 app.include_router(auth.router, prefix="/auth")
 app.include_router(projects.router, prefix="/projects")
 app.include_router(boards.router, prefix="/projects/{project_id}/boards")
+app.include_router(tasks.router, prefix="/projects/{project_id}/boards/{board_id}/tasks")
 
 
 @app.get("/")

@@ -5,14 +5,8 @@ from uuid import UUID
 class AddMemberSchema(BaseModel):
     role: UserRole   
 
-    class Config:
-        from_attributes = True
-
 class ChangeRoleMemberSchema(BaseModel):
     role: UserRole   
-
-    class Config:
-        from_attributes = True
 
 class MemberResponseSchema(BaseModel):
     user_id: UUID

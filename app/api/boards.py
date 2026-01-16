@@ -56,7 +56,28 @@ def get_boards(
 
     boards = (
         db.query(Board)
-        .filter(Board.project_id == project_id)
+        .filter(Board.project_id == project_id, Board.archived == False)
+        .order_by(Board.position.asc())
+        .all()
+    )
+    return boards
+
+@router.get("/archived", response_model=list[BoardResponseSchema])
+def get_archived_boards(
+    project_id: UUID,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    check_project_role(
+        project_id=project_id,
+        user_id=current_user["id"],
+        allowed_roles=[UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER],
+        db=db
+    )
+
+    boards = (
+        db.query(Board)
+        .filter(Board.project_id == project_id, Board.archived == True)
         .order_by(Board.position.asc())
         .all()
     )
@@ -112,6 +133,8 @@ def update_board(
         board.name = board_details.name
     if board_details.position is not None:
         board.position = board_details.position
+    if board_details.archived is not None:
+        board.archived = board_details.archived
     
     db.commit()
     db.refresh(board)

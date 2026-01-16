@@ -23,6 +23,4 @@ class User(Base):
     updated_at: so.Mapped[datetime] = so.mapped_column(
         sa.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc)
     )
-    #Maybe adding this later if necessary
-    #memberships: so.Mapped[list["Memberships"]] = so.relationship("Memberships", back_populates="user", cascade="all, delete-orphan")
 
