@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status, HTTPException, Body
 from ..schemas.task_schema import TaskCreateSchema, TaskUpdateSchema, TaskResponseSchema
 from ..db.dependencies import get_db
 from ..models.task import Task
-from ..models.membership import UserRole
+from ..models.membership import UserRole, Membership
 from sqlalchemy.orm import Session
 from ..auth.oauth2 import get_current_user
 from ..auth.roles import check_project_role
@@ -32,6 +32,15 @@ def create_task(
         .first()
     )
     next_position = (max_position.position + 1) if max_position else 0
+
+    if task_details.assignee_id:
+        assignee_membership = db.query(Membership).filter(
+            Membership.user_id == task_details.assignee_id,
+            Membership.project_id == project_id
+        ).first()
+    if not assignee_membership:
+        raise HTTPException(status_code=400, detail="Assignee must be a project member")
+    
     new_task = Task(
         **task_details.model_dump(exclude={"board_id", "position"}),
         board_id=board_id,
@@ -146,6 +155,16 @@ def update_task(
     "due_date",
     "board_id"
     }
+    if task_details.assignee_id:
+        assignee_membership = db.query(Membership).filter(
+            Membership.user_id == task_details.assignee_id,
+            Membership.project_id == project_id
+        ).first()
+    if not assignee_membership:
+        raise HTTPException(status_code=400, detail="Assignee must be a project member")
+    
+    if task_details.board_id != board_id:
+        raise HTTPException(status_code=400, detail="Task can only move to another board if this board is in the same project.")
 
     update_data = task_details.model_dump(exclude_none=True)
 

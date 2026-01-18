@@ -24,13 +24,11 @@ def create_board(
         allowed_roles=[UserRole.OWNER, UserRole.EDITOR],
         db=db
     )
-    max_position = (
-        db.query(Board.position)
-        .filter(Board.project_id == project_id)
-        .order_by(Board.position.desc())
-        .first()
-    )
-    next_position = (max_position[0] + 1) if max_position else 0
+    max_position_row = db.query(Board).filter(
+        Board.project_id == project_id
+    ).order_by(Board.position.desc()).first()
+
+    next_position = (max_position_row.position + 1) if max_position_row else 0
     new_board = Board(
         name=board_details.name,
         project_id=project_id,

@@ -7,7 +7,7 @@ from ..models.project import Project
 from ..models.membership import Membership, UserRole  
 from sqlalchemy.orm import Session
 from ..auth.oauth2 import get_current_user
-from ..auth.roles import check_project_role
+from ..auth.roles import require_project_roles, check_project_role
 from ..services import memberships
 from ..schemas.membership_schema import AddMemberSchema, ChangeRoleMemberSchema, MemberResponseSchema
 router = APIRouter(tags=["projects"])
@@ -18,22 +18,26 @@ def create_project(
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    new_project = Project(
-        name=project_details.name,
-        owner_id=current_user["id"]
-    )
-    db.add(new_project)
-    db.flush()
+    try:
+        new_project = Project(
+            name=project_details.name,
+            owner_id=current_user["id"]
+        )
+        db.add(new_project)
+        db.flush()
 
-    new_membership = Membership(
-        user_id=current_user["id"],
-        project_id=new_project.id,
-        role=UserRole.OWNER
-    )
-    db.add(new_membership)
-    db.commit()
-    db.refresh(new_project)
-    return new_project
+        new_membership = Membership(
+            user_id=current_user["id"],
+            project_id=new_project.id,
+            role=UserRole.OWNER
+        )
+        db.add(new_membership)
+        db.commit()
+        db.refresh(new_project)
+        return new_project
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/", response_model=list[ProjectResponseSchema])
@@ -54,14 +58,10 @@ def get_projects(
 def get_project(
     project_id: UUID,
     current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER]))
 ):
-    check_project_role(
-        project_id=project_id,
-        user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER],  
-        db=db
-    )
+
     
     project = db.query(Project).filter(Project.id == project_id).first()
     if not project:
@@ -75,14 +75,10 @@ def update_project(
     project_id: UUID,
     project_details: ProjectUpdateSchema,
     current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR]))
 ):
-    check_project_role(
-        project_id=project_id,
-        user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR],  
-        db=db
-    )
+
     
     project = db.query(Project).filter(Project.id == project_id).first()
     if not project:
