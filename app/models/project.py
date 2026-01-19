@@ -3,7 +3,7 @@ import sqlalchemy.orm as so
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from datetime import datetime, timezone
-from ..db.db_session import Base
+from ..db.session import Base
 
 
 class Project(Base):

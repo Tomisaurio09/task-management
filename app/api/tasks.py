@@ -1,13 +1,13 @@
 # app/api/projects.py
+
 from uuid import UUID
 from fastapi import APIRouter, Depends, status, HTTPException, Body
 from ..schemas.task_schema import TaskCreateSchema, TaskUpdateSchema, TaskResponseSchema
-from ..db.dependencies import get_db
+from ..core.dependencies import get_db, get_current_user, require_project_roles
 from ..models.task import Task
 from ..models.membership import UserRole, Membership
 from sqlalchemy.orm import Session
-from ..auth.oauth2 import get_current_user
-from ..auth.roles import check_project_role
+
 
 router = APIRouter(tags=["tasks"] )
 
@@ -16,15 +16,10 @@ def create_task(
     project_id: UUID,
     board_id: UUID,
     task_details:TaskCreateSchema = Body(...),
-    current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR]))
 ):
-    check_project_role(
-        project_id=project_id,
-        user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR],
-        db=db
-    )
+
     max_position = (
         db.query(Task)
         .filter(Task.board_id == board_id)
@@ -55,15 +50,10 @@ def create_task(
 def get_tasks(
     project_id: UUID,
     board_id: UUID,
-    current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER]))
 ):
-    check_project_role(
-        project_id=project_id,
-        user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER],
-        db=db
-    )
+
 
     tasks = (
         db.query(Task)
@@ -78,14 +68,10 @@ def get_archived_tasks(
     project_id: UUID,
     board_id: UUID,
     current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER]))
 ):
-    check_project_role(
-        project_id=project_id,
-        user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER],
-        db=db
-    )
+
 
     tasks = (
         db.query(Task)
@@ -101,14 +87,10 @@ def get_task(
     board_id: UUID,
     task_id: UUID,
     current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER]))
 ):
-    check_project_role(
-        project_id=project_id,
-        user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER],
-        db=db
-    )
+
 
     task = (
         db.query(Task)
@@ -125,16 +107,11 @@ def update_task(
     board_id: UUID,
     task_id: UUID,
     task_details: TaskUpdateSchema,
-    current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR]))
 ):
     """Changing the board_id of a task will move the task to another board."""
-    check_project_role(
-        project_id=project_id,
-        user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR],
-        db=db
-    )
+
 
     task = (
         db.query(Task)
@@ -181,15 +158,9 @@ def delete_task(
     project_id: UUID,
     board_id: UUID,
     task_id: UUID,
-    current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR]))
 ):
-    check_project_role(
-        project_id=project_id,
-        user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR],
-        db=db
-    )
 
     task = (
         db.query(Task)

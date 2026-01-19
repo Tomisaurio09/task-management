@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from sqlalchemy import Enum as SqlEnum
 from datetime import datetime, timezone
-from ..db.db_session import Base
+from ..db.session import Base
 
 
 class UserRole(Enum):

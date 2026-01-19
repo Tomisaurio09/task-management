@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.db.dependencies import get_db
+from app.core.dependencies import get_db
 import sqlalchemy as sa
 from fastapi.middleware.cors import CORSMiddleware
-from app.db.db_session import Base, engine
+from app.db.session import Base, engine
 from app import models 
 import os
 

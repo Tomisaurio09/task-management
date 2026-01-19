@@ -2,12 +2,11 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, status, HTTPException, Body
 from ..schemas.board_schema import BoardCreateSchema, BoardUpdateSchema, BoardResponseSchema
-from ..db.dependencies import get_db
+from ..core.dependencies import get_db, get_current_user, require_project_roles
 from ..models.board import Board
 from ..models.membership import UserRole  
 from sqlalchemy.orm import Session
-from ..auth.oauth2 import get_current_user
-from ..auth.roles import check_project_role
+
 
 router = APIRouter(tags=["boards"] )
 
@@ -15,15 +14,9 @@ router = APIRouter(tags=["boards"] )
 def create_board(
     project_id: UUID,
     board_details: BoardCreateSchema = Body(...),
-    current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR]))
 ):
-    check_project_role(
-        project_id=project_id,
-        user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR],
-        db=db
-    )
     max_position_row = db.query(Board).filter(
         Board.project_id == project_id
     ).order_by(Board.position.desc()).first()
@@ -42,15 +35,9 @@ def create_board(
 @router.get("/", response_model=list[BoardResponseSchema])
 def get_boards(
     project_id: UUID,
-    current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER]))
 ):
-    check_project_role(
-        project_id=project_id,
-        user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER],
-        db=db
-    )
 
     boards = (
         db.query(Board)
@@ -63,15 +50,9 @@ def get_boards(
 @router.get("/archived", response_model=list[BoardResponseSchema])
 def get_archived_boards(
     project_id: UUID,
-    current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER]))
 ):
-    check_project_role(
-        project_id=project_id,
-        user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER],
-        db=db
-    )
 
     boards = (
         db.query(Board)
@@ -85,15 +66,9 @@ def get_archived_boards(
 def get_board(
     project_id: UUID,
     board_id: UUID,
-    current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER]))
 ):
-    check_project_role(
-        project_id=project_id,
-        user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER],
-        db=db
-    )
 
     board = (
         db.query(Board)
@@ -109,15 +84,9 @@ def update_board(
     project_id: UUID,
     board_id: UUID,
     board_details: BoardUpdateSchema,
-    current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR]))
 ):
-    check_project_role(
-        project_id=project_id,
-        user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR],
-        db=db
-    )
 
     board = (
         db.query(Board)
@@ -143,14 +112,9 @@ def delete_board(
     project_id: UUID,
     board_id: UUID,
     current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR]))
 ):
-    check_project_role(
-        project_id=project_id,
-        user_id=current_user["id"],
-        allowed_roles=[UserRole.OWNER, UserRole.EDITOR],
-        db=db
-    )
 
     board = (
         db.query(Board)
