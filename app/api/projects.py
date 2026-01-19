@@ -6,36 +6,21 @@ from ..core.dependencies import get_db, get_current_user, require_project_roles
 from ..models.project import Project
 from ..models.membership import Membership, UserRole  
 from sqlalchemy.orm import Session
-from ..services import memberships
+from ..services import projects_services
 from ..schemas.membership_schema import AddMemberSchema, ChangeRoleMemberSchema, MemberResponseSchema
 router = APIRouter(tags=["projects"])
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=ProjectResponseSchema)
 def create_project(
-    project_details: ProjectCreateSchema = Body(...),
+    project_details: ProjectCreateSchema,
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    try:
-        new_project = Project(
-            name=project_details.name,
-            owner_id=current_user["id"]
-        )
-        db.add(new_project)
-        db.flush()
-
-        new_membership = Membership(
-            user_id=current_user["id"],
-            project_id=new_project.id,
-            role=UserRole.OWNER
-        )
-        db.add(new_membership)
-        db.commit()
-        db.refresh(new_project)
-        return new_project
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
+    return projects_services.create_project_membership(
+        project_details=project_details,
+        user_id=current_user["id"],
+        db=db,
+    )
 
 
 @router.get("/", response_model=list[ProjectResponseSchema])
@@ -126,7 +111,7 @@ def add_member_endpoint(
     membership=Depends(require_project_roles([UserRole.OWNER]))
     ):
 
-    return memberships.add_member(project_id, user_id, body.role, current_user["id"], db)
+    return projects_services.add_member(project_id, user_id, body.role, current_user["id"], db)
 
 
 @router.delete("/{project_id}/members/remove/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -137,7 +122,7 @@ def remove_member_endpoint(
     membership=Depends(require_project_roles([UserRole.OWNER]))
     ):
 
-    return memberships.remove_member(project_id, user_id, db)
+    return projects_services.remove_member(project_id, user_id, db)
 
 @router.patch("/{project_id}/members/change-role/{user_id}", status_code=status.HTTP_200_OK)
 def change_member_role_endpoint(
@@ -148,4 +133,4 @@ def change_member_role_endpoint(
     membership=Depends(require_project_roles([UserRole.OWNER]))
     ):
 
-    return memberships.change_member_role(project_id, user_id, body.role, db)
+    return projects_services.change_member_role(project_id, user_id, body.role, db)

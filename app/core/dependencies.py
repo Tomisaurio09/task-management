@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from jose import JWTError
 from app.db.session import SessionLocal
 from app.models.user import User
-from app.core.security import verify_token
+from security import verify_token
 from uuid import UUID
 from app.models.membership import Membership, UserRole
 
