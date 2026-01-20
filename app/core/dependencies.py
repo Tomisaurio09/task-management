@@ -8,6 +8,7 @@ from app.models.user import User
 from security import verify_token
 from uuid import UUID
 from app.models.membership import Membership, UserRole
+from app.core.exceptions import InsufficientPermissionsError, ResourceNotFoundError
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
@@ -64,10 +65,9 @@ def require_project_roles(
             )
             .first()
         )
-        if not membership or membership.role not in allowed_roles:
-            raise HTTPException(
-                status_code=403,
-                detail="You do not have the required permissions to access this resource.",
-            )
+        if not membership:
+            raise ResourceNotFoundError("You are not a member of this project")
+        if membership.role not in allowed_roles:
+            raise InsufficientPermissionsError(f"You need one of these roles: {[r.value for r in allowed_roles]}")
         return membership
     return dependency
