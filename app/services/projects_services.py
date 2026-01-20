@@ -10,7 +10,7 @@ from app.core.exceptions import (
     ProjectCreationError,
     ValidationError
 )
-
+#POST, GET, GET, PATCH, DELETE
 #LOS SERVICIOS NO TIENEN QUE USAR DEPENDS NI BODY NI HTTPEXCEPTION
 def create_project_membership(
     project_details: ProjectCreateSchema,
@@ -50,40 +50,44 @@ def create_project_membership(
         db.rollback()
         logger.error(f"Error creating project: {str(e)}", exc_info=True)
         raise ProjectCreationError("Failed to create project") from e
-
-def add_member(project_id: UUID, user_id: UUID, role: UserRole, current_user_id: UUID, db: Session):
-    existing = db.query(Membership).filter_by(user_id=user_id, project_id=project_id).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="The user is already a member of the project")
-
-    new_member = Membership(user_id=user_id, project_id=project_id, role=role, invited_by=current_user_id)
-    db.add(new_member)
-    db.commit()
-    return new_member
-
-def remove_member(project_id: UUID, user_id: UUID, db: Session):
-    member = db.query(Membership).filter_by(user_id=user_id, project_id=project_id).first()
-    if not member:
-        raise HTTPException(status_code=404, detail="Member not found in the project")
-
-    if member.role == UserRole.OWNER:
-        owners_count = db.query(Membership).filter_by( project_id=project_id, role=UserRole.OWNER ).count()
-        if owners_count <= 1:
-            raise HTTPException(status_code=400, detail="The project must have at least one OWNER")
-
-    db.delete(member)
-    db.commit()
-    return {"message": "Member removed successfully"}
-
-def change_member_role(project_id: UUID, user_id: UUID, new_role: UserRole, db: Session):
-    member = db.query(Membership).filter_by(user_id=user_id, project_id=project_id).first()
-    if not member:
-        raise HTTPException(status_code=404, detail="Member not found in the project")
-
-    if member.role == new_role:
-        raise HTTPException(status_code=400, detail="The member already has this role")
     
-    member.role = new_role
-    db.commit()
-    return member
+def get_projects(user_id: UUID, db: Session) -> list[Project]:
+    return (
+        db.query(Project)
+        .join(Membership)
+        .filter(Membership.user_id==user_id)
+        .all()
+    )
 
+def get_project_by_id(db:Session, project_id:UUID) -> Project:
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise ProjectNotFoundError(f"Project {project_id} not found")
+    return project
+
+def update_project(db:Session, project_id:UUID, project_details: ProjectUpdateSchema) -> Project:
+    project = get_project_by_id(db,project_id)
+    
+    project.name = project_details.name
+    db.commit()
+    db.refresh(project)
+    logger.info(f"Project {project_id} updated")
+    return project
+
+def delete_project(db:Session, project_id:UUID)->None:
+    project = get_project_by_id(db,project_id)
+    try:
+        db.delete(project)
+        db.commit()
+        logger.info(f"Project {project_id} deleted")
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error deleting project: {str(e)}", exc_info=True)
+        raise
+
+def get_project_members(db:Session, project_id:UUID) -> list[Membership]:
+    return(
+        db.query(Membership)
+        .filter(Membership.project_id == project_id)
+        .all()
+    )
