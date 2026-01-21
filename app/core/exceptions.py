@@ -58,7 +58,27 @@ class LastOwnerError(MembershipError):
     """Raised when trying to remove the last owner."""
     pass
 
+# Board exceptions
+class BoardNotFoundError(DomainException):
+    """Raised when a board doesn't exist."""
+    pass
 
+class BoardCreationError(DomainException):
+    """Raised when board creation fails."""
+    pass
+
+# Task exceptions
+class TaskNotFoundError(DomainException):
+    """Raised when a task doesn't exist."""
+    pass  
+
+class TaskCreationError(DomainException):
+    """Raised when task creation fails."""
+    pass
+
+class InvalidAssigneeError(DomainException):
+    """Raised when the assignee is not a project member."""
+    pass
 # Resource exceptions
 class ResourceNotFoundError(DomainException):
     """Generic resource not found."""

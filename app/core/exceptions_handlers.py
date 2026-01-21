@@ -1,15 +1,16 @@
 # app/core/exception_handlers.py
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
-from exceptions import (
+from app.core.exceptions import (
     DomainException,
-    AuthenticationError,
     InvalidCredentialsError,
     UserAlreadyExistsError,
     ProjectNotFoundError,
     ResourceNotFoundError,
     InsufficientPermissionsError,
     MemberAlreadyExistsError,
+    BoardNotFoundError,
+    TaskNotFoundError,
     LastOwnerError,
     ValidationError,
 )
@@ -44,6 +45,8 @@ def setup_exception_handlers(app):
     
     @app.exception_handler(ProjectNotFoundError)
     @app.exception_handler(ResourceNotFoundError)
+    @app.exception_handler(BoardNotFoundError)
+    @app.exception_handler(TaskNotFoundError)
     async def not_found_handler(request: Request, exc: DomainException):
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,

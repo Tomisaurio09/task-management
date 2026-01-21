@@ -1,36 +1,26 @@
-# app/api/projects.py
+# app/api/boards.py
 from uuid import UUID
-from fastapi import APIRouter, Depends, status, HTTPException, Body
-from ..schemas.board_schema import BoardCreateSchema, BoardUpdateSchema, BoardResponseSchema
-from ..core.dependencies import get_db, get_current_user, require_project_roles
-from ..models.board import Board
-from ..models.membership import UserRole  
+from fastapi import APIRouter, Depends, status, Body
 from sqlalchemy.orm import Session
 
+from app.schemas.board_schema import BoardCreateSchema, BoardUpdateSchema, BoardResponseSchema
+from app.core.dependencies import get_db, require_project_roles
+from app.models.membership import UserRole
+from app.services import board_service
 
-router = APIRouter(tags=["boards"] )
+router = APIRouter(tags=["boards"])
+
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=BoardResponseSchema)
 def create_board(
     project_id: UUID,
-    board_details: BoardCreateSchema = Body(...),
+    board_data: BoardCreateSchema = Body(...),
     db: Session = Depends(get_db),
     membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR]))
 ):
-    max_position_row = db.query(Board).filter(
-        Board.project_id == project_id
-    ).order_by(Board.position.desc()).first()
+    """Create a new board in the project."""
+    return board_service.create_board(project_id, board_data, db)
 
-    next_position = (max_position_row.position + 1) if max_position_row else 0
-    new_board = Board(
-        name=board_details.name,
-        project_id=project_id,
-        position=next_position
-    )
-    db.add(new_board)
-    db.commit()
-    db.refresh(new_board)
-    return new_board
 
 @router.get("/", response_model=list[BoardResponseSchema])
 def get_boards(
@@ -38,14 +28,9 @@ def get_boards(
     db: Session = Depends(get_db),
     membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER]))
 ):
+    """List all active boards in the project."""
+    return board_service.get_boards(project_id, include_archived=False, db=db)
 
-    boards = (
-        db.query(Board)
-        .filter(Board.project_id == project_id, Board.archived == False)
-        .order_by(Board.position.asc())
-        .all()
-    )
-    return boards
 
 @router.get("/archived", response_model=list[BoardResponseSchema])
 def get_archived_boards(
@@ -53,14 +38,9 @@ def get_archived_boards(
     db: Session = Depends(get_db),
     membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER]))
 ):
+    """List all archived boards in the project."""
+    return board_service.get_boards(project_id, include_archived=True, db=db)
 
-    boards = (
-        db.query(Board)
-        .filter(Board.project_id == project_id, Board.archived == True)
-        .order_by(Board.position.asc())
-        .all()
-    )
-    return boards
 
 @router.get("/{board_id}", response_model=BoardResponseSchema)
 def get_board(
@@ -69,61 +49,28 @@ def get_board(
     db: Session = Depends(get_db),
     membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER]))
 ):
+    """Get a specific board."""
+    return board_service.get_board_by_id(project_id, board_id, db)
 
-    board = (
-        db.query(Board)
-        .filter(Board.id == board_id, Board.project_id == project_id)
-        .first()
-    )
-    if not board:
-        raise HTTPException(status_code=404, detail="Board not found.")
-    return board
 
 @router.patch("/{board_id}", response_model=BoardResponseSchema)
 def update_board(
     project_id: UUID,
     board_id: UUID,
-    board_details: BoardUpdateSchema,
+    board_data: BoardUpdateSchema,
     db: Session = Depends(get_db),
     membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR]))
 ):
+    """Update a board."""
+    return board_service.update_board(project_id, board_id, board_data, db)
 
-    board = (
-        db.query(Board)
-        .filter(Board.id == board_id, Board.project_id == project_id)
-        .first()
-    )
-    if not board:
-        raise HTTPException(status_code=404, detail="Board not found.")
-
-    if board_details.name is not None:
-        board.name = board_details.name
-    if board_details.position is not None:
-        board.position = board_details.position
-    if board_details.archived is not None:
-        board.archived = board_details.archived
-    
-    db.commit()
-    db.refresh(board)
-    return board
 
 @router.delete("/{board_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_board(
     project_id: UUID,
     board_id: UUID,
-    current_user=Depends(get_current_user),
     db: Session = Depends(get_db),
     membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR]))
 ):
-
-    board = (
-        db.query(Board)
-        .filter(Board.id == board_id, Board.project_id == project_id)
-        .first()
-    )
-    if not board:
-        raise HTTPException(status_code=404, detail="Board not found.")
-
-    db.delete(board)
-    db.commit()
-    return None
+    """Delete a board and all its tasks."""
+    board_service.delete_board(project_id, board_id, db)

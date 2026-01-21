@@ -2,7 +2,7 @@
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
-from config import settings
+from app.core.config import settings
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 

@@ -2,13 +2,13 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, status, Body
 from sqlalchemy.orm import Session
-from app.core.dependencies import require_project_roles
+
 from app.schemas.project_schema import ProjectCreateSchema, ProjectUpdateSchema, ProjectResponseSchema
 from app.schemas.membership_schema import AddMemberSchema, ChangeRoleMemberSchema, MemberResponseSchema
-from app.core.dependencies import get_db, get_current_user
-from app.core.security import check_project_role
+from app.core.dependencies import get_db, get_current_user, require_project_roles
 from app.models.membership import UserRole
 from app.services import project_service, membership_service
+
 
 router = APIRouter(tags=["projects"])
 

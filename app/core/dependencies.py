@@ -2,10 +2,9 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from jose import JWTError
 from app.db.session import SessionLocal
 from app.models.user import User
-from security import verify_token
+from app.core.security import verify_token
 from uuid import UUID
 from app.models.membership import Membership, UserRole
 from app.core.exceptions import InsufficientPermissionsError, ResourceNotFoundError
