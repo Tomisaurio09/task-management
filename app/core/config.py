@@ -8,16 +8,23 @@ class Settings(BaseSettings):
     # JWT
     SECRET_KEY: str
     ALGORITHM: str 
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    REFRESH_TOKEN_EXPIRE_DAYS: int
+    MAX_PROJECTS_PER_USER: int
+    DEFAULT_PAGE_SIZE:int
+    MAX_PAGE_SIZE:int
     
     # CORS
-    ALLOWED_ORIGINS: list[str] = ["http://localhost:3000"]
+    ALLOWED_ORIGINS: list[str]
     
     # App
     APP_NAME: str = "Task Management API"
     DEBUG: bool = False
     
+    #Redis
+    REDIS_URL: str
+    RATE_LIMIT_ENABLED: bool
+    CACHE_TTL_DEFAULT: int
     class Config:
         env_file = ".env"
         case_sensitive = True

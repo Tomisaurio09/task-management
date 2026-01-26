@@ -1,7 +1,8 @@
-# app/services/memberships.pyfrom uuid import UUID
+# app/services/projects_services
 from uuid import UUID
 from sqlalchemy.orm import Session
 from app.models.project import Project
+from app.core.config import settings
 from app.models.membership import Membership, UserRole
 from app.schemas.project_schema import ProjectCreateSchema, ProjectUpdateSchema
 from app.core.logger import logger
@@ -24,7 +25,7 @@ def create_project_membership(
         .count()
     )
 
-    if user_projects_counts >= 20:
+    if user_projects_counts >= settings.MAX_PROJECTS_PER_USER:
         raise ValidationError("User has reached the maximum number of projects allowed.")
     try:
         new_project = Project(
