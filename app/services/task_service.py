@@ -5,6 +5,7 @@ from app.models.task import Task
 from app.models.membership import Membership
 from app.schemas.task_schema import TaskCreateSchema, TaskUpdateSchema
 from app.schemas.pagination import PaginationParams, SortParams, PaginatedResponse
+from app.core.pagination import apply_sorting, paginate
 from app.models.task import TaskStatus, PriorityLevel
 from app.core.logger import logger
 from app.core.exceptions import (
@@ -65,7 +66,7 @@ def create_task(
         logger.error(f"Error creating task: {str(e)}", exc_info=True)
         raise TaskCreationError("Failed to create task") from e
 
-
+#the only modified function
 def get_tasks(
     board_id: UUID,
     include_archived: bool,
@@ -87,8 +88,6 @@ def get_tasks(
     
     Sortable fields: name, position, created_at, updated_at, due_date, status, priority
     """
-    from app.schemas.pagination import PaginatedResponse
-    from app.core.pagination import apply_sorting, paginate
     
     query = db.query(Task).filter(Task.board_id == board_id)
     
