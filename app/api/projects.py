@@ -9,7 +9,7 @@ from app.schemas.pagination import PaginationParams, PaginatedResponse, SortPara
 from app.core.dependencies import get_db, get_current_user, require_project_roles
 from app.core.rate_limit import limiter
 from app.models.membership import UserRole
-from app.services import project_service, membership_service
+from app.services import projects_service, membership_service
 
 router = APIRouter(tags=["projects"])
 
@@ -22,7 +22,7 @@ def create_project(
     db: Session = Depends(get_db)
 ):
     """Create a new project. Creator becomes OWNER automatically."""
-    return project_service.create_project_membership(
+    return projects_service.create_project_membership(
         project_details=project_data,
         user_id=current_user["id"],
         db=db,
@@ -48,7 +48,7 @@ def get_projects(
     pagination = PaginationParams(page=page, page_size=page_size)
     sort_params = SortParams(sort_by=sort_by, sort_order=sort_order)
     
-    return project_service.get_projects(
+    return projects_service.get_projects(
         user_id=current_user["id"],
         pagination=pagination,
         sort_params=sort_params,
@@ -66,7 +66,7 @@ def get_project(
     membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER]))
 ):
     """Get a specific project."""
-    return project_service.get_project_by_id(project_id, db)
+    return projects_service.get_project_by_id(project_id, db)
 
 
 @router.patch("/{project_id}", response_model=ProjectResponseSchema)
@@ -79,7 +79,7 @@ def update_project(
     membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR]))
 ):
     """Update project name."""
-    return project_service.update_project(project_id, project_data, db)
+    return projects_service.update_project(project_id, project_data, db)
 
 
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -91,7 +91,7 @@ def delete_project(
     membership=Depends(require_project_roles([UserRole.OWNER]))
 ):
     """Delete project (only OWNER)."""
-    project_service.delete_project(project_id, db)
+    projects_service.delete_project(project_id, db)
 
 
 # --- Membership endpoints ---
@@ -105,7 +105,7 @@ def list_members(
     membership=Depends(require_project_roles([UserRole.OWNER, UserRole.EDITOR, UserRole.VIEWER]))
 ):
     """List all project members."""
-    return project_service.get_project_members(project_id, db)
+    return projects_service.get_project_members(project_id, db)
 
 
 @router.post("/{project_id}/members/add/{user_id}", status_code=status.HTTP_201_CREATED)

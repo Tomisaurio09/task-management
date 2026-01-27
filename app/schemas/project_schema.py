@@ -41,6 +41,7 @@ class ProjectResponseSchema(BaseModel):
     name: str
     owner_id: UUID
     memberships: list[MembershipResponseSchema] = []
+    created_at: datetime
 
     class Config:
         from_attributes = True

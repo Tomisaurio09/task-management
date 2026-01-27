@@ -1,6 +1,7 @@
 # app/core/exception_handlers.py
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
+from slowapi.errors import RateLimitExceeded
 from app.core.exceptions import (
     DomainException,
     InvalidCredentialsError,
@@ -91,3 +92,15 @@ def setup_exception_handlers(app):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"detail": "An unexpected error occurred"}
         )
+    
+    @app.exception_handler(RateLimitExceeded)
+    async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+        logger.warning(f"Rate limit exceeded: {str(exc)}")
+        return JSONResponse(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            content={"detail": "Too many requests. Please try again later."}
+        )
+
+
+
+
