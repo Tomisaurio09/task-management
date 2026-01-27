@@ -18,8 +18,8 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: list[str]
     
     # App
-    APP_NAME: str = "Task Management API"
-    DEBUG: bool = False
+    APP_NAME: str 
+    DEBUG: bool
     
     #Redis
     REDIS_URL: str
