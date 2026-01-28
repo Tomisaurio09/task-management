@@ -19,9 +19,9 @@ class Membership(Base):
     __tablename__ = "memberships"
 
     id: so.Mapped[int] = so.mapped_column(primary_key=True)      
-    user_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("users.id") )
-    project_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("projects.id") )
-    role: so.Mapped[UserRole] = so.mapped_column(SqlEnum(UserRole), default=UserRole.VIEWER)
+    user_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("users.id"), index=True )
+    project_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("projects.id"), index=True )
+    role: so.Mapped[UserRole] = so.mapped_column(SqlEnum(UserRole), default=UserRole.VIEWER, index=True)
     joined_at: so.Mapped[datetime] = so.mapped_column(
         sa.DateTime, default=datetime.now(timezone.utc), index=True
     )
@@ -30,7 +30,7 @@ class Membership(Base):
 
     __table_args__ = (
         sa.UniqueConstraint("user_id", "project_id", name="uq_membership_user_project"),
+        sa.Index("idx_membership_user_project_role", "user_id", "project_id", "role"),
     )
+    
     project: so.Mapped["Project"] = so.relationship( "Project", back_populates="memberships" ) # type: ignore
-    #Maybe adding this later if necessary
-    #user: so.Mapped["User"] = so.relationship("User", back_populates="memberships")

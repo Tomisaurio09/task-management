@@ -28,10 +28,10 @@ class Task(Base):
         primary_key=True, 
         default=uuid.uuid4
     )
-    status: so.Mapped[TaskStatus] = so.mapped_column(SqlEnum(TaskStatus), default=TaskStatus.ACTIVE)
-    priority: so.Mapped[PriorityLevel] = so.mapped_column(SqlEnum(PriorityLevel), default=PriorityLevel.MEDIUM)
-    board_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("boards.id") )
-    assignee_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("users.id"), nullable=True )
+    status: so.Mapped[TaskStatus] = so.mapped_column(SqlEnum(TaskStatus), default=TaskStatus.ACTIVE,index=True)
+    priority: so.Mapped[PriorityLevel] = so.mapped_column(SqlEnum(PriorityLevel), default=PriorityLevel.MEDIUM,index=True)
+    board_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("boards.id"),index=True )
+    assignee_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("users.id"), nullable=True,index=True )
     created_at: so.Mapped[datetime] = so.mapped_column(
         sa.DateTime, default=datetime.now(timezone.utc), index=True
     )
@@ -40,9 +40,15 @@ class Task(Base):
     )
     name: so.Mapped[str] = so.mapped_column(sa.String(256), index=True)
     description: so.Mapped[Optional[str]] = so.mapped_column(sa.String(512), nullable=True)
-    due_date: so.Mapped[Optional[datetime]] = so.mapped_column(sa.DateTime, nullable=True)
-    position: so.Mapped[int] = so.mapped_column(sa.Integer, default=0)
-    archived: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
+    due_date: so.Mapped[Optional[datetime]] = so.mapped_column(sa.DateTime, nullable=True,index=True)
+    position: so.Mapped[int] = so.mapped_column(sa.Integer, default=0,index=True)
+    archived: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False,index=True)
+
+    __table_args__ = (
+        sa.Index("idx_task_board_position", "board_id", "position"),
+        sa.Index("idx_task_board_archived", "board_id", "archived"),
+        sa.Index("idx_task_status_priority", "status", "priority"),
+    )
 
     board: so.Mapped["Board"] = so.relationship( "Board", back_populates="tasks" ) # type: ignore
 
