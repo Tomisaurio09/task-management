@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, field_validator
 import re
+from uuid import UUID
 
 class UserRegisterSchema(BaseModel):
     email: EmailStr
@@ -26,3 +27,11 @@ class UserRegisterSchema(BaseModel):
         return value
 
 
+class UserResponseSchema(BaseModel):
+    id: UUID
+    email: EmailStr
+    full_name: str
+    is_active: bool
+
+    class Config:
+        from_attributes = True

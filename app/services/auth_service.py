@@ -1,7 +1,7 @@
 # app/services/auth_service.py
 from sqlalchemy.orm import Session
 from app.models.user import User
-from app.schemas.user_schema import UserRegisterSchema
+from app.schemas.user_schema import UserRegisterSchema, UserResponseSchema
 from app.core.security import hash_password, verify_password, create_access_token, create_refresh_token, verify_token
 from app.core.logger import logger
 from app.core.exceptions import (
@@ -11,7 +11,7 @@ from app.core.exceptions import (
 )
 #SI TENGO UN ENDPOINT QUE HABLA SOBRE EL USER INACTIVE NECESITO UN
 #HELPER QUE SEA UN LOGOUT Y DESPUES CREAR UN ENDPOINT CON ESO
-def register_user(user_data: UserRegisterSchema, db: Session) -> User:
+def register_user(user_data: UserRegisterSchema, db: Session) -> UserResponseSchema:
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
         raise UserAlreadyExistsError("User already exists")
