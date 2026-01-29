@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 from app.models.project import Project
 from app.models.membership import Membership, UserRole
-from app.schemas.project_schema import ProjectCreateSchema, ProjectUpdateSchema
+from app.schemas.project_schema import ProjectCreateSchema, ProjectUpdateSchema, ProjectResponseSchema
 from app.schemas.pagination import PaginatedResponse, PaginationParams, SortParams
 from app.core.pagination import apply_sorting, paginate
 from app.core.logger import logger
@@ -18,7 +18,7 @@ def create_project_membership(
     project_details: ProjectCreateSchema,
     user_id: UUID,
     db: Session,
-) -> Project:
+) -> ProjectResponseSchema:
     """
     Create a new project with owner membership.
     

@@ -9,6 +9,7 @@ from app.core.dependencies import get_db
 from app.models.user import User
 from app.core.security import hash_password
 import uuid
+from app.core.rate_limit import limiter
 
 # Test database URL
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -83,3 +84,9 @@ def test_project(client, auth_headers):
         headers=auth_headers
     )
     return response.json()
+
+@pytest.fixture(autouse=True)
+def disable_rate_limit():
+    limiter.enabled = False
+    yield
+    limiter.enabled = True  

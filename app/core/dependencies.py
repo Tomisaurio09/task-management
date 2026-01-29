@@ -25,15 +25,15 @@ def get_current_user(
     db: Session = Depends(get_db)
 ) -> dict:
     payload = verify_token(token, "access")
-    
-    if not payload:
+    sub = payload.get("sub")
+    if not sub:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    user_id = payload.get("sub")
+    user_id = UUID(sub)
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
