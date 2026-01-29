@@ -36,7 +36,7 @@ class TestProjectCreation:
             json={"name": "   "},
             headers=auth_headers
         )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 class TestProjectList:
@@ -192,5 +192,5 @@ class TestProjectMaxLimit:
             json={"name": "Project 21"},
             headers=auth_headers
         )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert "maximum" in response.json()["detail"].lower()

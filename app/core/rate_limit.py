@@ -3,8 +3,7 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from fastapi import Request
 from app.core.config import settings
-from app.core.redis import get_redis_client
-from app.core.logger import logger
+
 
 
 def get_identifier_from_request(request: Request) -> str:

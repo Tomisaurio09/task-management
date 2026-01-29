@@ -45,7 +45,7 @@ class TestUserRegistration:
                 "full_name": "Test User"
             }
         )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     
     def test_register_invalid_email(self, client):
         """Test registration with invalid email fails"""
@@ -57,7 +57,7 @@ class TestUserRegistration:
                 "full_name": "Test User"
             }
         )
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 class TestUserLogin:

@@ -1,5 +1,6 @@
 # app/core/config.py
 from pydantic_settings import BaseSettings
+from pydantic import ConfigDict
 from functools import lru_cache
 
 class Settings(BaseSettings):
@@ -25,9 +26,7 @@ class Settings(BaseSettings):
     REDIS_URL: str
     RATE_LIMIT_ENABLED: bool
     CACHE_TTL_DEFAULT: int
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = ConfigDict( env_file=".env", case_sensitive=True )
 
 @lru_cache()
 def get_settings() -> Settings:

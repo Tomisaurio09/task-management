@@ -85,6 +85,33 @@ def test_project(client, auth_headers):
     )
     return response.json()
 
+@pytest.fixture
+def test_task(client, auth_headers, test_project, test_board):
+    """Create a test task"""
+    project_id = test_project["id"]
+    board_id = test_board["id"]
+    response = client.post(
+        f"/projects/{project_id}/boards/{board_id}/tasks",
+        json={
+            "name": "Test Task",
+            "description": "Task description"
+        },
+        headers=auth_headers
+    )
+    return response.json()
+
+@pytest.fixture
+def test_board(client, auth_headers, test_project):
+    """Create a test board"""
+    project_id = test_project["id"]
+    response = client.post(
+        f"/projects/{project_id}/boards",
+        json={"name": "To Do"},
+        headers=auth_headers
+    )
+    return response.json()
+
+
 @pytest.fixture(autouse=True)
 def disable_rate_limit():
     limiter.enabled = False
