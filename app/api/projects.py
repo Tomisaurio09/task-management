@@ -108,7 +108,7 @@ def list_members(
     return projects_service.get_project_members(project_id, db)
 
 
-@router.post("/{project_id}/members/add/{user_id}", status_code=status.HTTP_201_CREATED)
+@router.post("/{project_id}/members/add/{user_id}", status_code=status.HTTP_201_CREATED, response_model=MemberResponseSchema)
 @limiter.limit("20/minute")
 def add_member(
     request: Request,

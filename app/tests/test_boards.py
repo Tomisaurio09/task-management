@@ -31,6 +31,19 @@ class TestBoards:
         data = response.json()
         assert data["total"] >= 1
         assert len(data["items"]) >= 1
+
+    def test_get_board_by_id(self, client, auth_headers, test_project, test_board):
+        """Test getting a specific project"""
+        project_id = test_project["id"]
+        board_id = test_board["id"]
+        response = client.get(
+            f"/projects/{project_id}/boards/{board_id}",
+            headers=auth_headers
+        )
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert data["id"] == board_id
+        assert data["name"] == "To Do"
     
     def test_list_boards_pagination(self, client, auth_headers, test_project):
         """Test board pagination"""

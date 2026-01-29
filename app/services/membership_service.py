@@ -1,6 +1,7 @@
 from uuid import UUID
 from sqlalchemy.orm import Session
 from app.models.membership import Membership, UserRole
+from app.schemas.membership_schema import MemberResponseSchema
 from app.core.logger import logger
 from app.core.exceptions import (
     MemberAlreadyExistsError,
@@ -9,7 +10,7 @@ from app.core.exceptions import (
     ValidationError
 )
 
-def add_member(project_id: UUID, user_id: UUID, role: UserRole, invited_by: UUID, db: Session) -> Membership:
+def add_member(project_id: UUID, user_id: UUID, role: UserRole, invited_by: UUID, db: Session) -> MemberResponseSchema:
     existing = db.query(Membership).filter_by(user_id=user_id, project_id=project_id).first()
     if existing:
         raise MemberAlreadyExistsError("User is already a member of this project")

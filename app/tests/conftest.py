@@ -63,6 +63,20 @@ def test_user(db_session):
     db_session.refresh(user)
     return user
 
+@pytest.fixture
+def test_user_mem(db_session):
+    """Create a test user member"""
+    user = User(
+        id=uuid.uuid4(),
+        email="testmember@example.com",
+        password=hash_password("TestPassMember123"),
+        full_name="Test User Member",
+        is_active=True
+    )
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    return user
 
 @pytest.fixture
 def auth_headers(client, test_user):
