@@ -157,7 +157,10 @@ def update_task(
         "assignee_id", "description", "due_date", "board_id"
     }
     
-    update_data = task_data.model_dump(exclude_none=True)
+    update_data = task_data.model_dump(exclude_unset=True)
+    if "assignee_id" in update_data and update_data["assignee_id"] is None:
+        task.assignee_id = None
+
     
     for field, value in update_data.items():
         if field in ALLOWED_FIELDS:

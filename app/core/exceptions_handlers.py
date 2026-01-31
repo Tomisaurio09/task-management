@@ -14,6 +14,7 @@ from app.core.exceptions import (
     TaskNotFoundError,
     LastOwnerError,
     ValidationError,
+    InvalidAssigneeError
 )
 from app.core.logger import logger
 
@@ -29,6 +30,14 @@ def setup_exception_handlers(app):
             content={"detail": exc.message or "Invalid credentials"}
         )
     
+    @app.exception_handler(InvalidAssigneeError)
+    async def invalid_assignee_handler(request: Request, exc: InvalidAssigneeError):
+        logger.warning(f"Invalid assignee: {exc.message}")
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"detail": exc.message or "Assignee must be a project member"}
+        )
+
     @app.exception_handler(UserAlreadyExistsError)
     async def user_exists_handler(request: Request, exc: UserAlreadyExistsError):
         return JSONResponse(

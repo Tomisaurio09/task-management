@@ -1,8 +1,10 @@
 # app/tests/test_memberships.py
 import pytest
 from fastapi import status
-from app.models.membership import UserRole
-
+from app.models.membership import UserRole, Membership
+from app.models.user import User
+from app.core.security import hash_password
+import uuid
 
 class TestAddMember:
     """Test adding members to projects"""
@@ -45,9 +47,6 @@ class TestAddMember:
     
     def test_add_member_different_roles(self, client, auth_headers, test_project, db_session):
         """Test adding members with different roles"""
-        from app.models.user import User
-        from app.core.security import hash_password
-        import uuid
         
         project_id = test_project["id"]
         
@@ -249,9 +248,6 @@ class TestListMembers:
     
     def test_list_members_multiple(self, client, auth_headers, test_project, db_session):
         """Test listing multiple members"""
-        from app.models.user import User
-        from app.core.security import hash_password
-        import uuid
         
         project_id = test_project["id"]
         
@@ -293,10 +289,6 @@ class TestMembershipPermissions:
     
     def test_editor_cannot_add_members(self, client, test_project, test_user_mem, db_session):
         """Test EDITOR cannot add members"""
-        from app.models.user import User
-        from app.core.security import hash_password
-        import uuid
-        
         project_id = test_project["id"]
         
         # Create editor user
@@ -310,7 +302,6 @@ class TestMembershipPermissions:
         db_session.commit()
         
         # Add editor to project
-        from app.models.membership import Membership, UserRole
         membership = Membership(
             user_id=editor.id,
             project_id=uuid.UUID(str(project_id)),
@@ -337,9 +328,6 @@ class TestMembershipPermissions:
     
     def test_viewer_cannot_change_roles(self, client, test_project, test_user_mem, db_session):
         """Test VIEWER cannot change roles"""
-        from app.models.user import User
-        from app.core.security import hash_password
-        import uuid
         
         project_id = test_project["id"]
         
@@ -354,7 +342,6 @@ class TestMembershipPermissions:
         db_session.commit()
         
         # Add viewer to project
-        from app.models.membership import Membership, UserRole
         membership = Membership(
             user_id=viewer.id,
             project_id=uuid.UUID(str(project_id)),
