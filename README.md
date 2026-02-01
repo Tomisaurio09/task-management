@@ -35,7 +35,7 @@ enfocado en buenas prácticas de arquitectura, seguridad y testing.
 
 ### Docker (Recomendado)
 
-\`\`\`bash
+```bash
 # 1. Clonar y configurar
 git clone https://github.com/tomisaurio09/task-management.git
 cd task-management
@@ -46,18 +46,18 @@ docker-compose up -d
 
 # API: http://localhost:8000
 # Docs: http://localhost:8000/docs
-\`\`\`
+```
 
 ### Instalación Local
 
-\`\`\`bash
+```bash
 python -m venv venv
 source venv/bin/activate
 pip install -e .
 cp .env.example .env
 alembic upgrade head
 python main.py
-\`\`\`
+```
 
 ## Variables de Entorno
 
@@ -87,7 +87,7 @@ python main.py
 
 ### Endpoints Principales
 
-\`\`\`http
+```http
 # Auth
 POST   /auth/register
 POST   /auth/login
@@ -120,19 +120,19 @@ POST   /projects/{project_id}/boards/{board_id}/tasks
 GET    /projects/{project_id}/boards/{board_id}/tasks/{task_id}
 PATCH  /projects/{project_id}/boards/{board_id}/tasks/{task_id}
 DELETE /projects/{project_id}/boards/{board_id}/tasks/{task_id}
-\`\`\`
+```
 
 ---
 
 ## Testing
 
-\`\`\`bash
+```bash
 # Unit & Integration tests
 pytest --cov=app
 
 # Load testing
 locust -f load_tests.py --host=http://localhost:8000
-\`\`\`
+```
 
 **Coverage**: 95%+ | **Performance**: ~150-200 RPS
 
@@ -140,7 +140,7 @@ locust -f load_tests.py --host=http://localhost:8000
 
 ## Arquitectura
 
-\`\`\`
+```
 app/
 ├── api/          # Routers (endpoints)
 ├── core/         # Config, dependencies, exceptions
@@ -149,7 +149,7 @@ app/
 ├── schemas/      # Pydantic schemas
 ├── services/     # Business logic
 └── tests/        # Test suite
-\`\`\`
+```
 
 **Principios**: Clean Architecture, SOLID, Dependency Injection
 
@@ -180,22 +180,22 @@ app/
 
 ## Database Schema
 
-\`\`\`sql
+```sql
 users → projects → boards → tasks
       → memberships (OWNER/EDITOR/VIEWER)
-\`\`\`
+```
 
 ---
 
 ## Deployment
 
-\`\`\`bash
+```bash
 # Development
 docker-compose up -d
 
 # Production
 docker-compose -f docker-compose.prod.yml up -d
-\`\`\`
+```
 
 ---
 
