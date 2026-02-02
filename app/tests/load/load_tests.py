@@ -3,9 +3,10 @@
 Load testing for Task Management API using Locust.
 
 Run with:
-    locust -f locustfile.py --host=http://localhost:8000
+    locust -f app/tests/load/load_tests.py --host=http://localhost:8000
 
 Access web UI at: http://localhost:8089
+Turn off the limiter with limiter.enabled = False
 """
 
 from locust import HttpUser, task, between

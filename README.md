@@ -1,54 +1,52 @@
 # Task Management API
 
-**API RESTful completa para gestión de proyectos estilo Trello/Jira**
+**Complete RESTful API for project management (Trello/Jira style)**
 
 ---
 
-## Descripción
+## Description
 
-Sistema backend completo de gestión de tareas y proyectos con arquitectura moderna, diseñado siguiendo principios **SOLID** y **Clean Architecture**. Incluye autenticación JWT, sistema de roles (RBAC), paginación avanzada, rate limiting, y cobertura de tests del 95%+.
+A full backend system for task and project management with a modern architecture, designed following **SOLID** principles and **Clean Architecture**. Includes JWT authentication, role-based access control (RBAC), advanced pagination, rate limiting, and 95%+ test coverage.
 
-## Objetivo del Proyecto
+## Project Goal
 
-Este proyecto fue desarrollado como una API backend realista para simular
-un sistema de gestión de tareas colaborativo similar a Trello/Jira,
-enfocado en buenas prácticas de arquitectura, seguridad y testing.
+This project was developed as a realistic backend API to simulate a collaborative task management system similar to Trello/Jira, focused on best practices in architecture, security, and testing.
 
 ---
 
-## Características
+## Features
 
 ### **Core Features**
-- **Autenticación JWT** - Access & refresh tokens con Argon2
-- **Sistema de Roles (RBAC)** - OWNER, EDITOR, VIEWER
-- **Proyectos Colaborativos** - Gestión de equipos
-- **Boards Kanban** - Organización flexible
-- **Tasks Completas** - Prioridades, estados, asignaciones
-- **Paginación Avanzada** - Sorting, filtering
-- **Rate Limiting** - Protección con Redis
-- **Test Coverage 95%+** - Unit & integration tests
-- **Docker Ready** - Deploy con un comando
+- **JWT Authentication** – Access & refresh tokens with Argon2
+- **Role-Based Access Control (RBAC)** – OWNER, EDITOR, VIEWER
+- **Collaborative Projects** – Team management
+- **Kanban Boards** – Flexible organization
+- **Complete Tasks** – Priorities, states, assignments
+- **Advanced Pagination** – Sorting, filtering
+- **Rate Limiting** – Redis-based protection
+- **95%+ Test Coverage** – Unit & integration tests
+- **Docker Ready** – One-command deployment
 
 ---
 
-## Instalación Rápida
+## Quick Installation
 
-### Docker (Recomendado)
+### Docker (Recommended)
 
 ```bash
-# 1. Clonar y configurar
+# 1. Clone and configure
 git clone https://github.com/tomisaurio09/task-management.git
 cd task-management
 cp .env.example .env
 
-# 2. Iniciar servicios
+# 2. Start services
 docker-compose up -d
 
 # API: http://localhost:8000
 # Docs: http://localhost:8000/docs
 ```
 
-### Instalación Local
+### Local Installation
 
 ```bash
 python -m venv venv
@@ -59,10 +57,12 @@ alembic upgrade head
 python main.py
 ```
 
-## Variables de Entorno
+---
 
-| Variable | Descripción |
-|--------|-------------|
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
 | DATABASE_URL | PostgreSQL connection string |
 | SECRET_KEY | JWT secret |
 | ACCESS_TOKEN_EXPIRE_MINUTES | JWT access token TTL |
@@ -73,19 +73,32 @@ python main.py
 
 ## Auth Flow
 
-1. Usuario se registra o loguea
-2. Recibe access token + refresh token
-3. Access token se usa en cada request
-4. Refresh token genera un nuevo access token
-5. Rate limiting protege endpoints sensibles
+1. User registers or logs in  
+2. Receives access token + refresh token  
+3. Access token is used in each request  
+4. Refresh token generates a new access token  
+5. Rate limiting protects sensitive endpoints  
 
+---
 
-## Documentación de la API
+## Documentation
 
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+Comprehensive documentation is available in the [`app/docs/`](app/docs/) directory:
 
-### Endpoints Principales
+- **[API Endpoints](app/docs/endpoints.md)** - Complete endpoint documentation with examples
+- **[Architecture Guide](app/docs/architecture.md)** - System design, database schema, design decisions
+- **[Testing Guide](app/docs/testing.md)** - Unit tests, integration tests, load testing
+- **[RBAC Guide](app/docs/rbac.md)** - Complete information about roles and permissions
+
+### Interactive API Documentation
+
+When the server is running:
+- **Swagger UI**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **ReDoc**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+
+---
+
+## Main Endpoints
 
 ```http
 # Auth
@@ -113,7 +126,6 @@ GET    /projects/{project_id}/boards/{board_id}
 PATCH  /projects/{project_id}/boards/{board_id}
 DELETE /projects/{project_id}/boards/{board_id}
 
-
 # Tasks
 GET    /projects/{project_id}/boards/{board_id}/tasks
 POST   /projects/{project_id}/boards/{board_id}/tasks
@@ -134,11 +146,11 @@ pytest --cov=app
 locust -f load_tests.py --host=http://localhost:8000
 ```
 
-**Coverage**: 95%+ | **Performance**: ~150-200 RPS
+**Coverage**: 95%+ | **Performance**: ~150–200 RPS  
 
 ---
 
-## Arquitectura
+## Architecture
 
 ```
 app/
@@ -151,21 +163,21 @@ app/
 └── tests/        # Test suite
 ```
 
-**Principios**: Clean Architecture, SOLID, Dependency Injection
+**Principles**: Clean Architecture, SOLID, Dependency Injection  
 
 ---
 
-## Seguridad
+## Security
 
-- Argon2 password hashing
-- JWT access + refresh tokens
-- Redis rate limiting
-- Role-based access control
-- SQL injection protection (ORM)
+- Argon2 password hashing  
+- JWT access + refresh tokens  
+- Redis rate limiting  
+- Role-based access control  
+- SQL injection protection (ORM)  
 
 ---
 
-## Stack
+## Tech Stack
 
 | Tech | Version |
 |------|---------|
@@ -174,7 +186,7 @@ app/
 | PostgreSQL | 15 |
 | SQLAlchemy | 2.0+ |
 | Redis | 7.1 |
-| Docker 
+| Docker | latest |
 
 ---
 
@@ -199,10 +211,8 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ---
 
-## 👤 Autor
+## 👤 Author
 
-**Thomas Acevedo**
-- GitHub: [@tomisaurio09](https://github.com/Tomisaurio09)
-- LinkedIn: [Thomas Acevedo](https://www.linkedin.com/in/thomas-acevedo/)
-
----
+**Thomas Acevedo**  
+- GitHub: [@tomisaurio09](https://github.com/Tomisaurio09)  
+- LinkedIn: [Thomas Acevedo](https://www.linkedin.com/in/thomas-acevedo/)  
