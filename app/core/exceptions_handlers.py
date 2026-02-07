@@ -18,7 +18,6 @@ from app.core.exceptions import (
 )
 from app.core.logger import logger
 
-#las excepciones que antes estaban en logica python ahora se traducen a HTTP
 def setup_exception_handlers(app):
     """Register all exception handlers."""
     
@@ -84,7 +83,6 @@ def setup_exception_handlers(app):
             content={"detail": exc.message}
         )
     
-    # Catch-all para excepciones de dominio no específicas
     @app.exception_handler(DomainException)
     async def domain_exception_handler(request: Request, exc: DomainException):
         logger.error(f"Unhandled domain exception: {exc.message}", exc_info=True)
@@ -93,7 +91,6 @@ def setup_exception_handlers(app):
             content={"detail": exc.message or "Internal server error"}
         )
     
-    # Catch-all para errores inesperados
     @app.exception_handler(Exception)
     async def general_exception_handler(request: Request, exc: Exception):
         logger.error(f"Unexpected error: {str(exc)}", exc_info=True)

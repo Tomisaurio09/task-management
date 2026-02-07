@@ -11,7 +11,6 @@ from app.core.exceptions import InsufficientPermissionsError, ResourceNotFoundEr
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
-# Database dependency
 def get_db():
     db = SessionLocal()
     try:
@@ -19,7 +18,6 @@ def get_db():
     finally:
         db.close()
 
-# Auth dependency
 def get_current_user(
     token: str = Depends(oauth2_scheme), 
     db: Session = Depends(get_db)
@@ -53,7 +51,6 @@ def get_current_user(
     return {"id": user.id, "instance": user}
 
 
-#FUNCIONA COMO DEPENDENCIA
 def require_project_roles(
     allowed_roles: list[UserRole],
 ):

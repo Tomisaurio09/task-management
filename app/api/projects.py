@@ -14,7 +14,7 @@ from app.services import projects_service, membership_service
 router = APIRouter(tags=["projects"])
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=ProjectResponseSchema)
-@limiter.limit("10/minute")  # Max 10 projects created per minute
+@limiter.limit("10/minute")  
 def create_project(
     request: Request,
     project_data: ProjectCreateSchema = Body(...),

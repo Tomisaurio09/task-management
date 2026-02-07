@@ -14,7 +14,6 @@ from app.services import task_service
 router = APIRouter(tags=["tasks"])
 
 
-#El que mas cambia es el get all tasks, los demas solo se les agrega un limiter
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=TaskResponseSchema)
 @limiter.limit("50/minute")
 def create_task(

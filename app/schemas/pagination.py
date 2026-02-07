@@ -8,16 +8,13 @@ T = TypeVar('T')
 
 class PaginationParams(BaseModel):
     """Query parameters for pagination"""
-    #el default es 1 y empieza en 1, no puede ser negativo ni 0
     page: int = Field(default=1, ge=1, description="Page number (starts at 1)")
-    #cuantos items se muestran por pagina
     page_size: int = Field(
         default=settings.DEFAULT_PAGE_SIZE,
         ge=1,
         le=settings.MAX_PAGE_SIZE,
         description=f"Items per page (max {settings.MAX_PAGE_SIZE})"
     )
-    #de donde empieza basicamente
     @property
     def offset(self) -> int:
         """Calculate SQL offset"""
@@ -28,7 +25,6 @@ class PaginationParams(BaseModel):
         """Get SQL limit"""
         return self.page_size
 
-#respuesta generica para la paginacion
 class PaginatedResponse(BaseModel, Generic[T]):
     """Generic paginated response wrapper"""
     items: list[T]
@@ -48,7 +44,7 @@ class PaginatedResponse(BaseModel, Generic[T]):
         page_size: int
     ) -> "PaginatedResponse[T]":
         """Factory method to create paginated response"""
-        total_pages = (total + page_size - 1) // page_size  # Ceiling division
+        total_pages = (total + page_size - 1) // page_size  
         
         return cls(
             items=items,
@@ -60,7 +56,6 @@ class PaginatedResponse(BaseModel, Generic[T]):
             has_previous=page > 1
         )
 
-#schema para el sorting, donde se ve que campo y en que orden (asc o desc)
 class SortParams(BaseModel):
     """Query parameters for sorting"""
     sort_by: str | None = Field(default=None, description="Field to sort by")

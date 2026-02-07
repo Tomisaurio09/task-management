@@ -69,7 +69,6 @@ class AuthenticatedUser(HttpUser):
         if response.status_code == 201:
             project = response.json()
             self.projects.append(project["id"])
-#SE CREA UN PROYECTO Y EL ID SE GUARDA EN UNA LISTA PARA DESPUES PODER USARLO CON BOARDS, TASKS, ETC.
     
     @task(5)
     def list_projects(self):
@@ -85,7 +84,6 @@ class AuthenticatedUser(HttpUser):
             headers=self.headers,
             name="/projects [GET]"
         )
-#A PARTIR DE ESTE PUNTO NECESITAMOS EL PROJECT_ID, OSEA QUE TIENE QUE EXISTIR AL MENOS UN PROYECTO EN LAS LISTAS
     @task(2)
     def get_project_details(self):
         """Get specific project details"""
@@ -98,7 +96,6 @@ class AuthenticatedUser(HttpUser):
             headers=self.headers,
             name="/projects/{id} [GET]"
         )
-#SE CREA EL BOARD EN UN RANDOM PROJECT, USANDO SU ID
     @task(3)
     def create_board(self):
         """Create a board in a project"""
@@ -113,7 +110,6 @@ class AuthenticatedUser(HttpUser):
             name="/projects/{id}/boards [POST]"
         )
         
-        #self.boards ES UN DICCIONARIO. EL PROJECT ID ES UNA LLAVE QUE TIENE COMO VALOR UNA LISTA CON DIFERENTES BOARDS
         if response.status_code == 201:
             board = response.json()
             if project_id not in self.boards:
@@ -147,7 +143,6 @@ class AuthenticatedUser(HttpUser):
         if not self.boards:
             return
         
-        #SI EL PROJECT EXISTE, PERO NO TIENE NINGUN BOARD, RETURN
         project_id = random.choice(list(self.boards.keys()))
         if not self.boards[project_id]:
             return
@@ -167,8 +162,6 @@ class AuthenticatedUser(HttpUser):
             headers=self.headers,
             name="/projects/{id}/boards/{id}/tasks [POST]"
         )
-        #MISMO SISTEMA QUE LOS PROJECTS ANTERIORES
-        #UN DICCIONARIO CON CLAVE BOARD QUE TIENE VALOR LISTA CON DIFERENTES TASKS
         if response.status_code == 201:
             task = response.json()
             if board_id not in self.tasks_ids:
@@ -196,8 +189,6 @@ class AuthenticatedUser(HttpUser):
             "priority": random.choice([None, "low", "medium", "high"])
         }
         
-        # Remove None values
-        #UN POQUITO CONFUSO
         params = {k: v for k, v in params.items() if v is not None}
         
         self.client.get(

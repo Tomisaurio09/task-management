@@ -4,7 +4,6 @@ from sqlalchemy import asc, desc
 from app.schemas.pagination import PaginationParams, PaginatedResponse, SortParams
 from typing import TypeVar
 
-#representa un generic que esta definido en schemas/pagination.py
 T = TypeVar('T')
 
 
@@ -18,20 +17,14 @@ def apply_sorting(query: Query, sort_params: SortParams, model, allowed_fields: 
         model: SQLAlchemy model class
         allowed_fields: List of field names that can be sorted
     """
-    #retorna si no hay algun campo para ordenar
     if not sort_params.sort_by:
         return query
     
-    #en caso de que el usuario intente ordenar por un campo que no esta permitido
     if sort_params.sort_by not in allowed_fields:
-        # Silently ignore invalid fields or raise ValidationError
         return query
     
-    # Get the model attribute
-    #busca dentro de la clase model el atributo con ese nombre y lo devuelve.
     sort_column = getattr(model, sort_params.sort_by)
     
-    # Apply sort direction
     if sort_params.sort_order == "desc":
         return query.order_by(desc(sort_column))
     else:
@@ -54,10 +47,8 @@ def paginate(
     Returns:
         PaginatedResponse with items and metadata
     """
-    # Get total count before pagination
     total = query.count()
     
-    # Apply pagination
     items = query.offset(pagination.offset).limit(pagination.limit).all()
     
     return PaginatedResponse.create(

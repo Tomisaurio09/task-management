@@ -3,7 +3,6 @@ import redis
 from app.core.config import settings
 from app.core.logger import logger
 
-# Redis client singleton
 redis_client = None
 
 
@@ -19,12 +18,10 @@ def get_redis_client():
                 socket_connect_timeout=5,
                 socket_timeout=5
             )
-            # Test connection
             redis_client.ping()
             logger.info(f"Redis connected: {settings.REDIS_URL}")
         except redis.ConnectionError as e:
             logger.error(f"Redis connection failed: {e}")
-            # Return None if Redis is not available (graceful degradation)
             redis_client = None
     
     return redis_client

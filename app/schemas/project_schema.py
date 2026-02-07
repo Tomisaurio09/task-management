@@ -5,7 +5,6 @@ from typing import Optional
 
 class ProjectCreateSchema(BaseModel):
     name: str = Field(..., max_length=128, description="Project name, max 128 characters")
-    #owner_id: UUID
 
     @field_validator("name")
     @classmethod
