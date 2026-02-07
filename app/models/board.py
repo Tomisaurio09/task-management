@@ -16,10 +16,10 @@ class Board(Base):
     name: so.Mapped[str] = so.mapped_column(sa.String(128), index=True)
     project_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("projects.id"),index=True  )
     created_at: so.Mapped[datetime] = so.mapped_column(
-        sa.DateTime, default=datetime.now(timezone.utc)
+        sa.DateTime, default=lambda: datetime.now(timezone.utc)
     )
     updated_at : so.Mapped[datetime] = so.mapped_column(
-        sa.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc)
+        sa.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc)
     )
     position: so.Mapped[int] = so.mapped_column(sa.Integer, default=0,index=True )
     archived: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False,index=True )

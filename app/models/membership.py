@@ -23,7 +23,7 @@ class Membership(Base):
     project_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("projects.id"), index=True )
     role: so.Mapped[UserRole] = so.mapped_column(SqlEnum(UserRole), default=UserRole.VIEWER, index=True)
     joined_at: so.Mapped[datetime] = so.mapped_column(
-        sa.DateTime, default=datetime.now(timezone.utc), index=True
+        sa.DateTime, default=lambda: datetime.now(timezone.utc), index=True
     )
 
     invited_by: so.Mapped[Optional[uuid.UUID]] = so.mapped_column(UUID(as_uuid=True), sa.ForeignKey("users.id"), nullable=True)

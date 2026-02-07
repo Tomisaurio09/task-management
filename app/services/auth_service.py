@@ -1,17 +1,17 @@
 # app/services/auth_service.py
 from sqlalchemy.orm import Session
-from app.models import user
+from uuid import UUID
 from app.models.user import User
 from app.schemas.user_schema import UserRegisterSchema, UserResponseSchema
 from app.core.security import hash_password, verify_password, create_access_token, create_refresh_token, verify_token
 from app.core.logger import logger
+from app.core.redis import get_redis_client
 from app.core.exceptions import (
     UserAlreadyExistsError,
     InvalidCredentialsError,
     InsufficientPermissionsError
 )
-#SI TENGO UN ENDPOINT QUE HABLA SOBRE EL USER INACTIVE NECESITO UN
-#HELPER QUE SEA UN LOGOUT Y DESPUES CREAR UN ENDPOINT CON ESO
+
 def register_user(user_data: UserRegisterSchema, db: Session) -> UserResponseSchema:
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
@@ -83,3 +83,41 @@ def refresh_access_token(refresh_token: str) -> dict:
         "access_token": new_access_token,
         "token_type": "bearer"
     }
+
+
+def logout(token: str) -> None:
+    """
+    Logout by adding token to blacklist in Redis.
+    
+    The token will be blacklisted until it expires naturally.
+    """
+    payload = verify_token(token, expected_type="access")
+    if not payload:
+        logger.warning("Logout attempt with invalid token")
+        raise InvalidCredentialsError("Invalid or expired token")
+    
+    user_id = payload.get("sub")
+    exp = payload.get("exp")
+    
+    if not exp:
+        logger.warning("Token payload missing expiration")
+        raise InvalidCredentialsError("Invalid token")
+    
+    redis_client = get_redis_client()
+    if redis_client:
+        # Calculate TTL (time until token expiration)
+        import time
+        ttl = max(0, int(exp - time.time()))
+        
+        if ttl > 0:
+            # Add token to blacklist with TTL equal to token expiration
+            blacklist_key = f"token_blacklist:{token[:20]}"
+            redis_client.setex(blacklist_key, ttl, user_id)
+            logger.info(
+                "User logged out - token blacklisted",
+                extra={"user_id": user_id, "ttl": ttl}
+            )
+        else:
+            logger.info("Token already expired", extra={"user_id": user_id})
+    else:
+        logger.warning("Redis unavailable - logout without blacklist", extra={"user_id": user_id})

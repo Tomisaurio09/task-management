@@ -33,10 +33,10 @@ class Task(Base):
     board_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("boards.id"),index=True )
     assignee_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("users.id"), nullable=True,index=True )
     created_at: so.Mapped[datetime] = so.mapped_column(
-        sa.DateTime, default=datetime.now(timezone.utc), index=True
+        sa.DateTime, default=lambda: datetime.now(timezone.utc), index=True
     )
     updated_at: so.Mapped[datetime] = so.mapped_column(
-        sa.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc)
+        sa.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc)
     )
     name: so.Mapped[str] = so.mapped_column(sa.String(256), index=True)
     description: so.Mapped[Optional[str]] = so.mapped_column(sa.String(512), nullable=True)

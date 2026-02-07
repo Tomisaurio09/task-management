@@ -3,6 +3,7 @@ from passlib.context import CryptContext
 from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
 from app.core.config import settings
+from app.core.redis import get_redis_client
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
@@ -24,8 +25,20 @@ def create_refresh_token(data: dict) -> str:
     to_encode.update({"exp": expire, "type": "refresh"})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
+def is_token_blacklisted(token: str) -> bool:
+    """Check if token is in blacklist (logout)."""
+    redis_client = get_redis_client()
+    if redis_client:
+        blacklist_key = f"token_blacklist:{token[:20]}"
+        return redis_client.exists(blacklist_key) > 0
+    return False
+
 def verify_token(token: str, expected_type: str = "access") -> dict | None:
     try:
+        # Check if token is blacklisted
+        if is_token_blacklisted(token):
+            return None
+        
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         if payload.get("type") != expected_type:
             return None
