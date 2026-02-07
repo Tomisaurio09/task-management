@@ -203,10 +203,10 @@ users → projects → boards → tasks
 
 ```bash
 # Development
-docker-compose up -d
+docker compose --env-file .env.example up -d
 
 # Production
-docker-compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml up -d
 ```
 
 ---

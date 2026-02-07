@@ -11,8 +11,7 @@ from app.core.logger import logger
 from app.core.exceptions import (
     TaskNotFoundError,
     TaskCreationError,
-    InvalidAssigneeError,
-    ValidationError,
+    InvalidAssigneeError
 )
 
 
@@ -55,8 +54,18 @@ def create_task(
         db.add(new_task)
         db.commit()
         db.refresh(new_task)
-        
-        logger.info(f"Task '{new_task.name}' created in board {board_id}")
+        logger.info(
+            "Task created",
+            extra={
+                "task_id": str(new_task.id),
+                "task_name": new_task.name,
+                "board_id": str(board_id),
+                "project_id": str(project_id),
+                "assignee_id": str(task_data.assignee_id) if task_data.assignee_id else None,
+                "position": next_position
+            }
+        )
+
         return new_task
         
     except InvalidAssigneeError:
@@ -148,7 +157,6 @@ def update_task(
     
     # Validate board_id change (must stay in same project)
     if task_data.board_id and task_data.board_id != board_id:
-        # For now, we'll allow it since the endpoint enforces project_id
         pass
     
     # Update allowed fields
@@ -169,7 +177,15 @@ def update_task(
     db.commit()
     db.refresh(task)
     
-    logger.info(f"Task {task_id} updated")
+    logger.info(
+        "Task updated",
+        extra={
+            "task_id": str(task_id),
+            "board_id": str(board_id),
+            "updated_fields": list(update_data.keys())
+        }
+    )
+
     return task
 
 
@@ -180,7 +196,10 @@ def delete_task(board_id: UUID, task_id: UUID, db: Session) -> None:
     try:
         db.delete(task)
         db.commit()
-        logger.info(f"Task {task_id} deleted from board {board_id}")
+        logger.info(
+            "Task deleted",
+            extra={"task_id": str(task_id), "board_id": str(board_id)}
+        )
     except Exception as e:
         db.rollback()
         logger.error(f"Error deleting task: {str(e)}", exc_info=True)

@@ -15,7 +15,7 @@ class Project(Base):
         default=uuid.uuid4
     )
     name: so.Mapped[str] = so.mapped_column(sa.String(128), index=True)
-    owner_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("users.id") )
+    owner_id: so.Mapped[uuid.UUID] = so.mapped_column( UUID(as_uuid=True), sa.ForeignKey("users.id"), index=True )
     created_at: so.Mapped[datetime] = so.mapped_column(
         sa.DateTime, default=datetime.now(timezone.utc), index=True
     )

@@ -16,6 +16,7 @@ def create_board(
     db: Session
 ) -> Board:
     """Create a new board in a project."""
+    #It doesnt check if the project already exist but it tells the user that they are not a member of the project, so an error is thrown
     try:
         # Get max position for this project
         max_position_row = db.query(Board).filter(
@@ -33,7 +34,15 @@ def create_board(
         db.commit()
         db.refresh(new_board)
         
-        logger.info(f"Board '{new_board.name}' created in project {project_id}")
+        logger.info(
+            f"Board created",
+            extra={
+                "board_id": str(new_board.id),
+                "board_name": new_board.name,
+                "project_id": str(project_id)
+            }
+        )
+
         return new_board
         
     except Exception as e:
@@ -103,6 +112,7 @@ def update_board(
 ) -> Board:
     """Update a board."""
     board = get_board_by_id(project_id, board_id, db)
+    old_name = board.name
     
     # Update only provided fields
     if board_data.name is not None:
@@ -114,19 +124,38 @@ def update_board(
     
     db.commit()
     db.refresh(board)
-    
-    logger.info(f"Board {board_id} updated")
+
+    logger.info(
+        f"Board updated",
+        extra={
+            "board_id": str(board_id),
+            "old_name": old_name,
+            "new_name": board.name,
+            "board_name": str(board.name),
+            "project_id": str(project_id),
+        }
+    )
+
     return board
 
 
 def delete_board(project_id: UUID, board_id: UUID, db: Session) -> None:
     """Delete a board (hard delete)."""
     board = get_board_by_id(project_id, board_id, db)
-    
+    board_name = board.name
     try:
         db.delete(board)
         db.commit()
-        logger.info(f"Board {board_id} deleted from project {project_id}")
+
+        logger.info(
+            f"Board deleted",
+            extra={
+                "board_id": str(board_id),
+                "board_name": board_name,
+                "project_id": str(project_id)
+            }
+        )
+
     except Exception as e:
         db.rollback()
         logger.error(f"Error deleting board: {str(e)}", exc_info=True)

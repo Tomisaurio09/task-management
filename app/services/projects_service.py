@@ -7,6 +7,7 @@ from app.schemas.project_schema import ProjectCreateSchema, ProjectUpdateSchema,
 from app.schemas.pagination import PaginatedResponse, PaginationParams, SortParams
 from app.core.pagination import apply_sorting, paginate
 from app.core.logger import logger
+from sqlalchemy.orm import selectinload
 from app.core.exceptions import (
     ProjectNotFoundError,
     ProjectCreationError,
@@ -34,6 +35,11 @@ def create_project_membership(
     )
 
     if user_projects_count >= 20:
+        logger.warning(
+            "Project creation blocked - max projects reached",
+            extra={"user_id": str(user_id), "projects_count": user_projects_count}
+        )
+
         raise ValidationError("You have reached the maximum of 20 projects")
     
     try:
@@ -53,7 +59,15 @@ def create_project_membership(
         db.commit()
         db.refresh(new_project)
         
-        logger.info(f"Project '{new_project.name}' created by user {user_id}")
+        logger.info(
+            "Project created with owner membership",
+            extra={
+                "project_id": str(new_project.id),
+                "project_name": new_project.name,
+                "owner_id": str(user_id)
+            }
+        )
+
         return new_project
         
     except ValidationError:
@@ -79,9 +93,10 @@ def get_projects(
     
     Sortable fields: name, created_at
     """
-    
+    #avoid N+1 by eager loading memberships and filtering in Python
     query = (
         db.query(Project)
+        .options(selectinload(Project.memberships))  
         .join(Membership)
         .filter(Membership.user_id == user_id)
     )
@@ -118,7 +133,14 @@ def update_project(
     db.commit()
     db.refresh(project)
     
-    logger.info(f"Project {project_id} updated")
+    logger.info(
+        "Project updated",
+        extra={
+            "project_id": str(project_id),
+            "new_name": project_data.name
+        }
+    )
+
     return project
 
 
@@ -129,7 +151,11 @@ def delete_project(project_id: UUID, db: Session) -> None:
     try:
         db.delete(project)
         db.commit()
-        logger.info(f"Project {project_id} deleted")
+        logger.info(
+            "Project deleted",
+            extra={"project_id": str(project_id), "project_name": project.name}
+        )
+
     except Exception as e:
         db.rollback()
         logger.error(f"Error deleting project: {str(e)}", exc_info=True)
