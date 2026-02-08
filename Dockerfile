@@ -14,30 +14,30 @@ RUN apt-get update && apt-get install -y \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml ./
-COPY README.md ./
+COPY pyproject.toml README.md ./
 
 RUN pip install --upgrade pip && \
-    pip install alembic>=1.17.2 \
-                fastapi>=0.128.0 \
-                passlib[bcrypt]>=1.7.4 \
-                psycopg2-binary>=2.9.11 \
-                psycopg[binary]>=3.3.2 \
-                pwdlib[argon2]>=0.3.0 \
-                pydantic-settings>=2.12.0 \
-                pydantic[email]>=2.12.5 \
-                python-dotenv>=1.2.1 \
-                python-jose[cryptography]>=3.5.0 \
-                python-multipart>=0.0.21 \
-                redis>=7.1.0 \
-                slowapi>=0.1.9 \
-                sqlalchemy>=2.0.45 \
-                uvicorn>=0.40.0
+    pip install \
+        alembic>=1.17.2 \
+        fastapi>=0.128.0 \
+        locust>=2.43.1 \
+        passlib[bcrypt]>=1.7.4 \
+        psycopg2-binary>=2.9.11 \
+        "psycopg[binary]>=3.3.2" \
+        "pwdlib[argon2]>=0.3.0" \
+        pydantic-settings>=2.12.0 \
+        "pydantic[email]>=2.12.5" \
+        python-dotenv>=1.2.1 \
+        "python-jose[cryptography]>=3.5.0" \
+        python-multipart>=0.0.21 \
+        redis>=7.1.0 \
+        slowapi>=0.1.9 \
+        sqlalchemy>=2.0.45 \
+        uvicorn>=0.40.0
 
 COPY src/ ./src/
 COPY alembic/ ./alembic/
-COPY alembic.ini ./
-COPY main.py ./
+COPY alembic.ini main.py ./
 
 RUN useradd -m -u 1000 appuser && \
     chown -R appuser:appuser /app
