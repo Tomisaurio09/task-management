@@ -5,11 +5,6 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     DATABASE_URL: str
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
-    POSTGRES_HOST: str
-    POSTGRES_PORT: int
     
     # JWT
     SECRET_KEY: str
