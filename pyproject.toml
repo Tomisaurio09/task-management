@@ -1,7 +1,7 @@
 [project]
 name = "task-management"
 version = "0.1.0"
-description = "Add your description here"
+description = "Task Management API - Trello/Jira style"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -22,8 +22,6 @@ dependencies = [
     "sqlalchemy>=2.0.45",
     "uvicorn>=0.40.0",
 ]
-[tool.setuptools.packages.find]
-where = ["src"]
 
 [project.optional-dependencies]
 dev = [
@@ -33,3 +31,12 @@ dev = [
     "httpx>=0.28.1",
 ]
 
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+app = ["py.typed"]

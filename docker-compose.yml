@@ -1,8 +1,6 @@
-# docker-compose.yml
 version: '3.8'
 
 services:
-  # PostgreSQL Database
   db:
     image: postgres:15-alpine
     container_name: taskmanager-db
@@ -23,7 +21,6 @@ services:
     networks:
       - app-network
 
-  # Redis for caching and rate limiting
   redis:
     image: redis:7-alpine
     container_name: taskmanager-redis
@@ -40,7 +37,6 @@ services:
     networks:
       - app-network
 
-  # FastAPI Application
   api:
     build:
       context: .
@@ -50,31 +46,20 @@ services:
     ports:
       - "8000:8000"
     environment:
-      # Database
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      
-      # JWT Configuration
       SECRET_KEY: ${SECRET_KEY}
       ALGORITHM: ${ALGORITHM}
-      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
-      REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS:-7}
-      
-      # Application Limits
-      MAX_PROJECTS_PER_USER: ${MAX_PROJECTS_PER_USER:-20}
-      DEFAULT_PAGE_SIZE: ${DEFAULT_PAGE_SIZE:-20}
-      MAX_PAGE_SIZE: ${MAX_PAGE_SIZE:-100}
-      
-      # CORS
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
+      REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS}
+      MAX_PROJECTS_PER_USER: ${MAX_PROJECTS_PER_USER}
+      DEFAULT_PAGE_SIZE: ${DEFAULT_PAGE_SIZE}
+      MAX_PAGE_SIZE: ${MAX_PAGE_SIZE}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
-      
-      # Application Settings
-      APP_NAME: ${APP_NAME:-Task Management API}
-      DEBUG: "true"
-      
-      # Redis
-      REDIS_URL: ${REDIS_URL}
-      RATE_LIMIT_ENABLED: "true"
-      CACHE_TTL_DEFAULT: ${CACHE_TTL_DEFAULT:-300}
+      APP_NAME: ${APP_NAME}
+      DEBUG: ${DEBUG}
+      REDIS_URL: redis://redis:6379
+      RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED}
+      CACHE_TTL_DEFAULT: ${CACHE_TTL_DEFAULT}
     depends_on:
       db:
         condition: service_healthy
@@ -97,10 +82,7 @@ services:
 
 volumes:
   postgres_data:
-    driver: local
   redis_data:
-    driver: local
 
 networks:
   app-network:
-    driver: bridge
