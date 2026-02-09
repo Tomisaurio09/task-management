@@ -37,6 +37,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: taskmanager-api-dev
+    env_file:
+    - .env
     restart: unless-stopped
     ports:
       - "8000:8000"
