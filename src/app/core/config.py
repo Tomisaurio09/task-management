@@ -1,14 +1,21 @@
 # app/core/config.py
 from pydantic_settings import BaseSettings
-from pydantic import ConfigDict
 from functools import lru_cache
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import PostgresDsn
 
 class Settings(BaseSettings):
-    DATABASE_URL: str
-    
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
+    DATABASE_URL: PostgresDsn
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+    )
+
+settings = Settings()
+
+class Settings(BaseSettings):
+    DATABASE_URL: PostgresDsn
     # JWT
     SECRET_KEY: str
     ALGORITHM: str 
@@ -29,7 +36,7 @@ class Settings(BaseSettings):
     REDIS_URL: str
     RATE_LIMIT_ENABLED: bool
     CACHE_TTL_DEFAULT: int
-    model_config = ConfigDict( env_file=".env", case_sensitive=True )
+    model_config = SettingsConfigDict( env_file=".env", case_sensitive=True )
 
 @lru_cache()
 def get_settings() -> Settings:
