@@ -1,11 +1,11 @@
 # app/core/config.py
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import PostgresDsn
+
 
 
 class Settings(BaseSettings):
-    DATABASE_URL: PostgresDsn
+    DATABASE_URL: str
 
     # JWT
     SECRET_KEY: str
