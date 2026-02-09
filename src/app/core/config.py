@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     REDIS_URL: str
     RATE_LIMIT_ENABLED: bool
     CACHE_TTL_DEFAULT: int
+    REDIS_PASSWORD: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

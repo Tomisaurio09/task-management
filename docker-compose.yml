@@ -1,11 +1,78 @@
 services:
+  db:
+    image: postgres:15-alpine
+    container_name: taskmanager-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: taskmanager-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
   api:
-    image: task-management-api
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: taskmanager-api-dev
     env_file:
       - .env
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: ${ALGORITHM}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
+      REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS}
+      MAX_PROJECTS_PER_USER: ${MAX_PROJECTS_PER_USER}
+      DEFAULT_PAGE_SIZE: ${DEFAULT_PAGE_SIZE}
+      MAX_PAGE_SIZE: ${MAX_PAGE_SIZE}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      APP_NAME: ${APP_NAME}
+      DEBUG: ${DEBUG}
+      REDIS_URL: redis://redis:6379
+      RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED}
+      CACHE_TTL_DEFAULT: ${CACHE_TTL_DEFAULT}
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+      - ./alembic:/app/alembic
+    command: ["sh", "-c", "alembic upgrade head && uvicorn app.app:app --host 0.0.0.0 --port 8000 --workers 4"]
+
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  app-network:
