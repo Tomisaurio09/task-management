@@ -10,10 +10,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apt-get update && apt-get install -y \
     gcc \
     postgresql-client \
-    curl \
     && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml README.md ./
+
 COPY src ./src
 COPY alembic ./alembic
 COPY alembic.ini main.py ./
@@ -23,12 +23,11 @@ RUN pip install --upgrade pip \
 
 RUN useradd -m -u 1000 appuser \
     && chown -R appuser:appuser /app
-
 USER appuser
 
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+    CMD python -c "import requests; requests.get('http://localhost:8000/health')"
 
 CMD ["uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "8000"]
