@@ -7,7 +7,7 @@ from app.api import auth, projects, boards, tasks
 app = FastAPI(
     title="Task Management API",
     version="1.0.0",
-    description="Backend estilo Trello con FastAPI + SQLAlchemy + PostgreSQL",
+    description="Backend trello style with FastAPI + SQLAlchemy + PostgreSQL",
     debug=settings.DEBUG,
 )
 

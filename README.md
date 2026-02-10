@@ -31,6 +31,10 @@ This project was developed as a realistic backend API to simulate a collaborativ
 
 ## Quick Installation
 
+### Prerequisites
+- Docker & Docker Compose
+- Git
+
 ### Docker (Recommended)
 
 ```bash
@@ -59,6 +63,19 @@ python main.py
 
 ---
 
+### First API Call
+```bash
+# Register user
+curl -X POST http://localhost:8000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "SecurePass123",
+    "full_name": "John Doe"
+  }'
+
+---
+
 ## Environment Variables
 
 | Variable | Description |
@@ -67,7 +84,6 @@ python main.py
 | SECRET_KEY | JWT secret |
 | ACCESS_TOKEN_EXPIRE_MINUTES | JWT access token TTL |
 | REDIS_URL | Redis connection |
-| ENV | dev / test / prod |
 
 ---
 

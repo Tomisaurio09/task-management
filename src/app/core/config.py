@@ -39,7 +39,7 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    """Singleton para evitar leer .env múltiples veces"""
+    """Singleton to avoid reloading settings multiple times."""
     return Settings()
 
 
