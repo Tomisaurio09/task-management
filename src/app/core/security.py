@@ -4,6 +4,7 @@ from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
 from app.core.config import settings
 from app.core.redis import get_redis_client
+from app.core.logger import logger
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
@@ -29,7 +30,7 @@ def is_token_blacklisted(token: str) -> bool:
     """Check if token is in blacklist (logout)."""
     redis_client = get_redis_client()
     if redis_client:
-        blacklist_key = f"token_blacklist:{token[:20]}"
+        blacklist_key = f"token_blacklist:{token}"
         return redis_client.exists(blacklist_key) > 0
     return False
 
@@ -41,7 +42,9 @@ def verify_token(token: str, expected_type: str = "access") -> dict | None:
         
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         if payload.get("type") != expected_type:
+            logger.warning(f"Token type mismatch: expected {expected_type}, got {payload.get('type')}")
             return None
         return payload
-    except JWTError:
+    except JWTError as e:
+        logger.warning(f"JWT decode error: {e}")
         return None

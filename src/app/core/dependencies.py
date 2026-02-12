@@ -29,6 +29,7 @@ def get_current_user(
             detail="Invalid or expired token",
             headers={"WWW-Authenticate": "Bearer"},
             )
+             
     sub = payload.get("sub")
     if not sub:
         raise HTTPException(

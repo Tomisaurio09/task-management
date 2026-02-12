@@ -2,20 +2,14 @@
 
 ## Overview
 
-**Current Coverage**: 95%+
-
-**Testing Pyramid**:
-```
-Integration Tests (API endpoints)
-Unit Tests (Services, utilities)
-```
+**Current Coverage**: 90%+
 
 ---
 
 ## Test Structure
 
 ```
-app/tests/
+src/app/tests/
 ├── conftest.py              # Fixtures & test config
 ├── test_auth.py             # Authentication tests
 ├── test_projects.py         # Projects CRUD + business rules
@@ -251,16 +245,6 @@ pytest --cov=app --cov-report=html
 # View report
 open htmlcov/index.html
 ```
-
-**Current Coverage**:
-```
-app/
-├── api/          100%   # All endpoints tested
-├── core/         95%    # Security, dependencies
-├── models/       100%   # Models are simple
-├── schemas/      100%   # Pydantic validates itself
-└── services/     95%    # Most business logic covered
-```
 ---
 
 ## Running Tests
@@ -274,13 +258,13 @@ pytest
 ### Specific File
 
 ```bash
-pytest app/tests/test_auth.py
+pytest src/app/tests/test_auth.py
 ```
 
 ### Specific Test
 
 ```bash
-pytest app/tests/test_auth.py::test_register_success
+pytest src/app/tests/test_auth.py::test_register_success
 ```
 
 ### With Coverage
@@ -315,7 +299,7 @@ pytest --lf  # Last failed
 ### Basic Run
 
 ```bash
-locust -f app/tests/load/load_tests.py --host=http://localhost:8000
+locust -f src/app/tests/load/load_tests.py --host=http://localhost:8000
 ```
 
 **Open**: http://localhost:8089
@@ -323,7 +307,7 @@ locust -f app/tests/load/load_tests.py --host=http://localhost:8000
 ### Headless (CI/CD)
 
 ```bash
-locust -f app/tests/load/load_tests.py \
+locust -f src/app/tests/load/load_tests.py \
   --host=http://localhost:8000 \
   --users 50 \
   --spawn-rate 10 \

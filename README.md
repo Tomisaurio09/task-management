@@ -6,7 +6,7 @@
 
 ## Description
 
-A full backend system for task and project management with a modern architecture, designed following **SOLID** principles and **Clean Architecture**. Includes JWT authentication, role-based access control (RBAC), advanced pagination, rate limiting, and 95%+ test coverage.
+A full backend system for task and project management with a modern architecture, designed following **SOLID** principles and **Clean Architecture**. Includes JWT authentication, role-based access control (RBAC), advanced pagination, rate limiting, and 90%+ test coverage.
 
 ## Project Goal
 
@@ -162,7 +162,7 @@ pytest --cov=app
 locust -f load_tests.py --host=http://localhost:8000
 ```
 
-**Coverage**: 95%+ | **Performance**: ~150–200 RPS  
+**Coverage**: 90%+ | **Performance**: ~150–200 RPS  
 
 ---
 

@@ -1,4 +1,4 @@
-# 🌐 API Endpoints
+# API Endpoints
 
 ## Base URL
 
@@ -8,7 +8,7 @@ Development: http://localhost:8000
 
 ## Authentication
 
-Todos los endpoints (excepto `/auth/*` y `/health`) requieren autenticación:
+All the endpoints (except `/auth/*` and `/health`) require autentication:
 
 ```http
 Authorization: Bearer <access_token>
@@ -16,7 +16,7 @@ Authorization: Bearer <access_token>
 
 ---
 
-## 🔐 Authentication
+## Authentication
 
 ### Register
 
@@ -85,7 +85,7 @@ Content-Type: application/json
 
 ---
 
-## 📁 Projects
+## Projects
 
 ### List Projects
 
@@ -196,7 +196,7 @@ Authorization: Bearer <token>
 
 ---
 
-## 👥 Memberships
+## Memberships
 
 ### List Members
 
@@ -265,7 +265,7 @@ Content-Type: application/json
 
 ---
 
-## 📋 Boards
+## Boards
 
 ### List Boards
 
@@ -350,7 +350,7 @@ Authorization: Bearer <token>
 
 ---
 
-## ✅ Tasks
+## Tasks
 
 ### List Tasks
 
@@ -452,7 +452,7 @@ Authorization: Bearer <token>
 
 ---
 
-## 🏥 Health Check
+## Health Check
 
 ```http
 GET /health

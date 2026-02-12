@@ -102,6 +102,8 @@ class TestTokenRefresh:
             "/auth/login",
             data={"username": test_user.email, "password": "TestPass123"}
         )
+        
+
         refresh_token = login_response.json()["refresh_token"]
         
         # Refresh
@@ -121,3 +123,28 @@ class TestTokenRefresh:
             json={"refresh_token": "invalid.token.here"}
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+class TestUserLogout:
+    """Test user logout endpoint"""
+    
+    def test_logout_success(self, client, test_user):
+        """Test successful logout"""
+        # Login first
+        login_response = client.post(
+            "/auth/login",
+            data={"username": test_user.email, "password": "TestPass123"}
+        )
+        access_token = login_response.json()["access_token"]
+        
+        # Logout
+        response = client.post(
+            "/auth/logout",
+            headers={"Authorization": f"Bearer {access_token}"}
+        )
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    def test_logout_requires_token_body(self, client):
+        response = client.post("/auth/logout")
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+  

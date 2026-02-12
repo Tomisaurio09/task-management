@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.core.rate_limit import limiter
 from app.schemas.user_schema import UserRegisterSchema, UserResponseSchema
-from app.core.dependencies import get_db, get_current_user
+from app.core.dependencies import get_db, get_current_user, oauth2_scheme
 from app.services import auth_service
 
 router = APIRouter(tags=["auth"])
@@ -26,7 +26,7 @@ def refresh(refresh_token: str = Body(..., embed=True)):
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 def logout(
     current_user=Depends(get_current_user),
-    token: str = Body(..., embed=True)
+    token: str = Depends(oauth2_scheme)
 ):
     """
     Logout endpoint that blacklists the current token.
