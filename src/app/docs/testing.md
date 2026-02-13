@@ -18,6 +18,7 @@ src/app/tests/
 └── test_tasks.py            # Tasks + validations
 └── load/
     └── load_tests.py        # Load testing scenarios
+    └── setup_users.py       # Pre-made users for load_testing
 ```
 
 ---
@@ -299,7 +300,17 @@ pytest --lf  # Last failed
 ### Basic Run
 
 ```bash
-locust -f src/app/tests/load/load_tests.py --host=http://localhost:8000
+limiter = Limiter(
+    #...
+    enabled=False, #Make sure the rate limiter is deactivated (check your .env)
+    #...
+)
+
+python main.py #Start the server
+
+python src/app/tests/load/setup_users.py #Create the users before executing locust
+
+locust -f src/app/tests/load/load_tests.py --host=http://localhost:8000 #Dont forget to check the logs
 ```
 
 **Open**: http://localhost:8089
@@ -317,12 +328,3 @@ locust -f src/app/tests/load/load_tests.py \
 ```
 
 ---
-
-## Future Testing Improvements
-
-1. **Mutation Testing**: Verify tests catch bugs (e.g., `mutmut`)
-2. **Property-Based Testing**: Generate random inputs (`hypothesis`)
-3. **Contract Testing**: API contract tests (`pact`)
-4. **E2E Tests**: Full user flows (`Playwright`, `Cypress`)
-5. **Performance Regression**: Track performance over time
-6. **Security Testing**: SQL injection, XSS (`bandit`, `safety`)

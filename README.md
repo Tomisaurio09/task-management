@@ -1,5 +1,11 @@
 # Task Management API
 
+![Python](https://img.shields.io/badge/python-3.12-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.128+-green)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
+![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-blue)
+
 **Complete RESTful API for project management (Trello/Jira style)**
 
 ---
@@ -26,6 +32,13 @@ This project was developed as a realistic backend API to simulate a collaborativ
 - **Rate Limiting** – Redis-based protection
 - **90%+ Test Coverage** – Unit & integration tests
 - **Docker Ready** – One-command deployment
+
+---
+
+## Demo
+
+### API Documentation (Swagger)
+![Swagger UI](src/app/docs/images/swagger.png)
 
 ---
 
@@ -73,6 +86,7 @@ curl -X POST http://localhost:8000/auth/register \
     "password": "SecurePass123",
     "full_name": "John Doe"
   }'
+```
 
 ---
 
@@ -159,10 +173,21 @@ DELETE /projects/{project_id}/boards/{board_id}/tasks/{task_id}
 pytest --cov=app
 
 # Load testing
-locust -f load_tests.py --host=http://localhost:8000
+locust -f src/app/tests/load/load_tests.py --host=http://localhost:8000
 ```
 
-**Coverage**: 90%+ | **Performance**: ~150–200 RPS  
+**Coverage**: 90%+ 
+
+---
+## Performance
+
+Tested with **Locust** simulating user workflows:
+
+- **Response Time (P95)**: <500ms  
+- **Error Rate**: <1%
+- **Concurrent Users**: 75-100
+
+Load testing setup available in `src/app/tests/load/`
 
 ---
 

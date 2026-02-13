@@ -491,8 +491,8 @@ GET /health
 
 | Endpoint | Limit | Window |
 |----------|-------|--------|
-| `POST /auth/register` | - | - |
-| `POST /auth/login` | - | - |
+| `POST /auth/register` | 5 | 1 minute |
+| `POST /auth/login` | 10 | 1 minute |
 | `POST /projects` | 10 | 1 minute |
 | `GET /projects` | 60 | 1 minute |
 | `POST /boards` | 20 | 1 minute |

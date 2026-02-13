@@ -187,7 +187,7 @@ def main():
     print("   Set: limiter.enabled = False")
     print()
     print("2. Run Locust:")
-    print("   locust -f load_tests.py --host=http://localhost:8000")
+    print("   locust -f src/app/tests/load/load_tests.py --host=http://localhost:8000")
     print()
     print("3. Open web UI:")
     print("   http://localhost:8089")
