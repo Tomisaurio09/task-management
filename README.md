@@ -24,7 +24,7 @@ This project was developed as a realistic backend API to simulate a collaborativ
 - **Complete Tasks** – Priorities, states, assignments
 - **Advanced Pagination** – Sorting, filtering
 - **Rate Limiting** – Redis-based protection
-- **95%+ Test Coverage** – Unit & integration tests
+- **90%+ Test Coverage** – Unit & integration tests
 - **Docker Ready** – One-command deployment
 
 ---
