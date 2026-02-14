@@ -232,6 +232,7 @@ src/app/
 ---
 
 ## Database Schema
+![Database Schema](src/app/docs/images/dbtrello.png)
 
 ```sql
 users → projects → boards → tasks
