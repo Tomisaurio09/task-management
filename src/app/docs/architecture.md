@@ -45,7 +45,7 @@ This project follows **Clean Architecture** principles with a clear separation o
 
 ## Main Components
 
-### 1. API Layer (`app/api/`)
+### 1. API Layer (`src/app/api/`)
 
 **Responsibilities**:
 - Define endpoints and routing  
@@ -77,7 +77,7 @@ def create_project(
 
 ---
 
-### 2. Service Layer (`app/services/`)
+### 2. Service Layer (`src/app/services/`)
 
 **Responsibilities**:
 - Implement business logic  
@@ -125,7 +125,7 @@ def create_project_membership(
 
 ---
 
-### 3. Data Layer (`app/models/`)
+### 3. Data Layer (`src/app/models/`)
 
 **Responsibilities**:
 - Define database schema  

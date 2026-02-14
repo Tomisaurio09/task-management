@@ -113,12 +113,12 @@ curl -X POST http://localhost:8000/auth/register \
 
 ## Documentation
 
-Comprehensive documentation is available in the [`app/docs/`](app/docs/) directory:
+Comprehensive documentation is available in the [`src/app/docs/`](src/app/docs/) directory:
 
-- **[API Endpoints](app/docs/endpoints.md)** - Complete endpoint documentation with examples
-- **[Architecture Guide](app/docs/architecture.md)** - System design, database schema, design decisions
-- **[Testing Guide](app/docs/testing.md)** - Unit tests, integration tests, load testing
-- **[RBAC Guide](app/docs/rbac.md)** - Complete information about roles and permissions
+- **[API Endpoints](src/app/docs/endpoints.md)** - Complete endpoint documentation with examples
+- **[Architecture Guide](src/app/docs/architecture.md)** - System design, database schema, design decisions
+- **[Testing Guide](src/app/docs/testing.md)** - Unit tests, integration tests, load testing
+- **[RBAC Guide](src/app/docs/rbac.md)** - Complete information about roles and permissions
 
 ### Interactive API Documentation
 
@@ -194,7 +194,7 @@ Load testing setup available in `src/app/tests/load/`
 ## Architecture
 
 ```
-app/
+src/app/
 ├── api/          # Routers (endpoints)
 ├── core/         # Config, dependencies, exceptions
 ├── db/           # Sessions, Base
