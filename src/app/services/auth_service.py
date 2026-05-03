@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 from app.models.user import User
 from app.schemas.user_schema import UserRegisterSchema, UserResponseSchema
-from app.core.security import hash_password, verify_password, create_access_token, create_refresh_token, verify_token
+from app.core.security import hash_password, verify_password, create_access_token, create_refresh_token, verify_token, _hash_token
 from app.core.logger import logger
 from app.core.redis import get_redis_client
 from app.core.exceptions import (
@@ -111,7 +111,7 @@ def logout(token: str) -> None:
         
         if ttl > 0:
             # Add token to blacklist with TTL equal to token expiration
-            blacklist_key = f"token_blacklist:{token[:20]}"
+            blacklist_key = f"token_blacklist:{_hash_token(token)}"
             redis_client.setex(blacklist_key, ttl, user_id)
             logger.info(
                 "User logged out - token blacklisted",

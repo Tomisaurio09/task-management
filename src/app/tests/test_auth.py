@@ -1,6 +1,7 @@
 # tests/test_auth.py
 import pytest
 from fastapi import status
+from unittest.mock import patch, MagicMock
 
 
 class TestUserRegistration:
@@ -147,4 +148,22 @@ class TestUserLogout:
         response = client.post("/auth/logout")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-  
+    def test_logout_invalid_token(self, client, test_user):
+        login_response = client.post(
+            "/auth/login",
+            data={"username": test_user.email, "password": "TestPass123"}
+        )
+        access_token = login_response.json()["access_token"]
+        headers={"Authorization": f"Bearer {access_token}"}
+
+        mock_redis = MagicMock()
+        mock_redis.exists.return_value = 0  # Token not blacklisted
+
+        with patch("app.core.security.get_redis_client", return_value=mock_redis):
+            response = client.get("/projects",headers=headers)
+            assert response.status_code == status.HTTP_200_OK
+
+        mock_redis.exists.return_value = 1  # Token is blacklisted
+        with patch("app.core.security.get_redis_client", return_value=mock_redis):
+            response = client.get("/projects",headers=headers)
+            assert response.status_code == status.HTTP_401_UNAUTHORIZED
