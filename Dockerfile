@@ -38,7 +38,8 @@ RUN pip install --upgrade pip && \
 COPY src/ ./src/
 COPY alembic/ ./alembic/
 COPY alembic.ini main.py ./
-
+COPY scripts/entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 RUN useradd -m -u 1000 appuser && \
     chown -R appuser:appuser /app
 
