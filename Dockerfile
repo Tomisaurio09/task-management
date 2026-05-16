@@ -33,7 +33,9 @@ RUN pip install --upgrade pip && \
         requests>=2.32.5 \
         slowapi>=0.1.9 \
         sqlalchemy>=2.0.45 \
-        uvicorn>=0.40.0
+        uvicorn>=0.40.0 \
+        "celery[redis]>=5.3.0" \
+        flower>=2.0.0
 
 COPY src/ ./src/
 COPY alembic/ ./alembic/
