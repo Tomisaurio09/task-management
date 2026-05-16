@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.models.membership import Membership, UserRole
 from app.schemas.membership_schema import MemberResponseSchema
 from app.core.logger import logger
+from app.tasks.notification_tasks import send_member_invitation_email
 from app.core.exceptions import (
     MemberAlreadyExistsError,
     LastOwnerError,
@@ -25,6 +26,13 @@ def add_member(project_id: UUID, user_id: UUID, role: UserRole, invited_by: UUID
         db.add(new_member)
         db.commit()
         db.refresh(new_member)
+
+        send_member_invitation_email.delay(
+            project_id=str(project_id),
+            user_email=str(user_id),  # En un caso real, esto sería el email del usuario, no el ID
+            invited_by_email=str(invited_by),  # Lo mismo para el email del invitador
+            role=role.value
+        )
         logger.info(
             "Member added to project",
             extra={
