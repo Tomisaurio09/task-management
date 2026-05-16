@@ -69,7 +69,67 @@ services:
 
     networks:
       - app-network
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: taskmanager-celery-worker
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+    command: ["celery", "-A", "app.core.celery_app", "worker", "--loglevel=info"]
+    networks:
+      - app-network
 
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: taskmanager-celery-beat
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+    command: ["celery", "-A", "app.core.celery_app", "beat", "--loglevel=info"]
+    networks:
+      - app-network
+
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: taskmanager-flower
+    env_file:
+      - .env
+    environment:
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - celery-worker
+    command: ["celery", "-A", "app.core.celery_app", "flower", "--port=5555"]
+    networks:
+      - app-network
 volumes:
   postgres_data:
   redis_data:
