@@ -1,5 +1,4 @@
 # app/tests/test_memberships.py
-import pytest
 from fastapi import status
 from app.models.membership import UserRole, Membership
 from app.models.user import User

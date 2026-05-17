@@ -1,6 +1,5 @@
 # app/services/auth_service.py
 from sqlalchemy.orm import Session
-from uuid import UUID
 from app.models.user import User
 from app.schemas.user_schema import UserRegisterSchema, UserResponseSchema
 from app.core.security import hash_password, verify_password, create_access_token, create_refresh_token, verify_token, _hash_token
@@ -37,7 +36,7 @@ def register_user(user_data: UserRegisterSchema, db: Session) -> UserResponseSch
             } 
         )
         return new_user
-    except Exception as e:
+    except Exception:
         db.rollback()
         logger.error( "Error registering user", extra={"email": user_data.email}, exc_info=True )
         raise

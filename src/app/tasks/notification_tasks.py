@@ -1,5 +1,4 @@
 # app/tasks/notification_tasks.py
-from celery import shared_task
 from app.core.celery_app import celery_app
 from app.core.logger import logger
 

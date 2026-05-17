@@ -1,5 +1,4 @@
 # tests/test_projects.py
-import pytest
 from fastapi import status
 
 

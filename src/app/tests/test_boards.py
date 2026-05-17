@@ -1,6 +1,5 @@
 # tests/test_boards.py
 
-import pytest
 from fastapi import status
 import time
 from app.models.user import User
