@@ -1,5 +1,4 @@
 # tests/test_auth.py
-import pytest
 from fastapi import status
 from unittest.mock import patch, MagicMock
 

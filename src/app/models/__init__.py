@@ -1,5 +1,5 @@
-from .user import User
-from .project import Project
-from .board import Board
-from .task import Task
-from .membership import Membership
+from .user import User as User
+from .project import Project as Project
+from .board import Board as Board 
+from .task import Task as Task
+from .membership import Membership as Membership

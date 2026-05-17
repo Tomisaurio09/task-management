@@ -102,7 +102,7 @@ def get_tasks(
     
     # Filter archived
     if not include_archived:
-        query = query.filter(Task.archived == False)
+        query = query.filter(Task.archived.is_(False))
     
     # Filter by status
     if status_filter:

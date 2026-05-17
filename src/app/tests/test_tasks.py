@@ -1,5 +1,4 @@
 # tests/test_tasks.py
-import pytest
 from fastapi import status
 from datetime import datetime, timedelta, timezone
 import uuid
@@ -132,9 +131,6 @@ class TestTasks:
         assert data["items"][0]["name"] == "Task 2"
     
 # app/tests/test_tasks_extended.py
-import pytest
-from fastapi import status
-from datetime import datetime, timedelta, timezone
 
 
 class TestTaskValidations:
@@ -275,7 +271,6 @@ class TestTaskAssignee:
     
     def test_unassign_task(self, client, auth_headers, test_project, test_board, test_user, db_session):
         """Test removing assignee from task"""
-        from app.models.membership import Membership, UserRole
         
         project_id = test_project["id"]
         board_id = test_board["id"]

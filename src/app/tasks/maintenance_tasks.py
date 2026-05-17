@@ -21,7 +21,7 @@ def archive_overdue_tasks():
         overdue_tasks = db.query(Task).filter(
             Task.due_date < now,
             Task.status == TaskStatus.ACTIVE,
-            Task.archived == False
+            Task.archived.is_(False)
         ).all()
 
         for task in overdue_tasks:

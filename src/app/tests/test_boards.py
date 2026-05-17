@@ -1,6 +1,5 @@
 # tests/test_boards.py
 
-import pytest
 from fastapi import status
 import time
 from app.models.user import User
@@ -23,7 +22,7 @@ class TestBoards:
         data = response.json()
         assert data["name"] == "Sprint Backlog"
         assert data["position"] == 0
-        assert data["archived"] == False
+        assert not data["archived"]
     
     def test_list_boards(self, client, auth_headers, test_project, test_board):
         """Test listing boards"""
@@ -84,7 +83,7 @@ class TestBoards:
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["name"] == "Updated Board"
-        assert data["archived"] == True
+        assert data["archived"]
     
     def test_delete_board(self, client, auth_headers, test_project, test_board):
         """Test deleting a board"""

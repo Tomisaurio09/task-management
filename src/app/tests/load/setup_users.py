@@ -131,13 +131,10 @@ def main():
             if result["success"]:
                 if result.get("existed"):
                     existed += 1
-                    symbol = "↻"
                 else:
                     created += 1
-                    symbol = "✓"
             else:
                 failed += 1
-                symbol = "✗"
             
             # Progress indicator
             if i % 10 == 0:

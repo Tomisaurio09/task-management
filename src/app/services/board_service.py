@@ -35,7 +35,7 @@ def create_board(
         db.refresh(new_board)
         
         logger.info(
-            f"Board created",
+            "Board created",
             extra={
                 "board_id": str(new_board.id),
                 "board_name": new_board.name,
@@ -73,7 +73,7 @@ def get_boards(
     
     # Filter archived
     if not include_archived:
-        query = query.filter(Board.archived == False)
+        query = query.filter(Board.archived.is_(False))
     
     # Filter by name
     if name_filter:
@@ -126,7 +126,7 @@ def update_board(
     db.refresh(board)
 
     logger.info(
-        f"Board updated",
+        "Board updated",
         extra={
             "board_id": str(board_id),
             "old_name": old_name,
@@ -148,7 +148,7 @@ def delete_board(project_id: UUID, board_id: UUID, db: Session) -> None:
         db.commit()
 
         logger.info(
-            f"Board deleted",
+            "Board deleted",
             extra={
                 "board_id": str(board_id),
                 "board_name": board_name,

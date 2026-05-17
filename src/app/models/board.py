@@ -5,6 +5,13 @@ import uuid
 from datetime import datetime, timezone
 from ..db.session import Base
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    # Estos imports solo los ve Ruff/VS Code, 
+    from app.models.project import Project
+    from app.models.task import Task
+
 class Board(Base):
     __tablename__ = "boards"
 
