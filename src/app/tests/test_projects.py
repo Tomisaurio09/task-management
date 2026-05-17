@@ -79,8 +79,8 @@ class TestProjectList:
         assert data["page"] == 1
         assert data["page_size"] == 2
         assert data["total"] == 5
-        assert data["has_next"] == True
-        assert data["has_previous"] == False
+        assert data["has_next"]
+        assert not data["has_previous"]
     
     def test_list_projects_sorting(self, client, auth_headers):
         """Test project sorting"""

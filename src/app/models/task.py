@@ -8,6 +8,10 @@ from sqlalchemy import Enum as SqlEnum
 from datetime import datetime, timezone
 from ..db.session import Base
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.models.board import Board
 
 class TaskStatus(Enum):
     ACTIVE = "active"

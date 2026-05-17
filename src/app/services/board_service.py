@@ -73,7 +73,7 @@ def get_boards(
     
     # Filter archived
     if not include_archived:
-        query = query.filter(Board.archived == False)
+        query = query.filter(Board.archived.is_(False))
     
     # Filter by name
     if name_filter:

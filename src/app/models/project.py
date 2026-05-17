@@ -5,6 +5,11 @@ import uuid
 from datetime import datetime, timezone
 from ..db.session import Base
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.models.project import Membership
+    from app.models.board import Board
 
 class Project(Base):
     __tablename__ = "projects"
