@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.exceptions_handlers import setup_exception_handlers
 from app.api import auth, projects, boards, tasks
+from prometheus_fastapi_instrumentator import Instrumentator   # ← nuevo
+
 
 app = FastAPI(
     title="Task Management API",
@@ -20,7 +22,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+Instrumentator().instrument(app).expose(app)   # ← nuevo
 
 app.include_router(auth.router, prefix="/auth")
 app.include_router(projects.router, prefix="/projects")
