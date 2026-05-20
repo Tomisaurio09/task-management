@@ -35,7 +35,9 @@ RUN pip install --upgrade pip && \
         sqlalchemy>=2.0.45 \
         uvicorn>=0.40.0 \
         "celery[redis]>=5.3.0" \
-        flower>=2.0.0
+        flower>=2.0.0 \
+        structlog>=25.5.0, \
+        prometheus-fastapi-instrumentator>=7.1.0 
 
 COPY src/ ./src/
 COPY alembic/ ./alembic/
