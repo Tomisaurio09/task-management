@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s      # cada 15s pide métricas
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "task-management-api"
+    static_configs:
+      - targets: ["api:8000"]   # nombre del servicio en docker-compose + puerto
+    metrics_path: "/metrics"    # el endpoint que expone prometheus-fastapi-instrumentator

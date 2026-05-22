@@ -1,0 +1,43 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml  # rastrea hasta dónde leyó cada archivo
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: task-management-api
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        filters:
+          - name: name
+            values: ["taskmanager-api-dev"]  # nombre del container en docker-compose
+    relabel_configs:
+      # Etiqueta: nombre del container
+      - source_labels: [__meta_docker_container_name]
+        target_label: container
+      # Etiqueta: nombre del servicio
+      - source_labels: [__meta_docker_container_label_com_docker_compose_service]
+        target_label: service
+    pipeline_stages:
+      # Parsea el JSON que emite structlog
+      - json:
+          expressions:
+            level: level
+            event: event
+            timestamp: timestamp
+      # Extrae el timestamp del log para que Loki lo use
+      - timestamp:
+          source: timestamp
+          format: RFC3339
+      # Crea labels desde los campos del JSON
+      - labels:
+          level:
+          service:
+      # Usa el campo "event" como línea del log en Grafana
+      - output:
+          source: event
